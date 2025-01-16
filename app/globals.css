@@ -3,8 +3,22 @@
 @tailwind utilities;
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --color-primary: #ef3d37; /* Primary color */
+  --color-secondary: #f4f3e5; /* Secondary color */
+  --color-dark: #212122; /* Dark color */
+  --color-gray: #5e6161; /* Gray color */
+  --color-accent: #39a2ae; /* Accent color */
+}
+
+@font-face {
+  font-family: 'Suisse Intl';
+  src: url('/fonts/SuisseIntl.woff2') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+}
+
+body {
+  font-family: 'Suisse Intl', sans-serif;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -19,3 +33,9 @@ body {
   background: var(--background);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+.dot--white {
+  background-color: white;
+  background-color: color(display-p3 1 1 1);
+  background-color: color(rec2020 2 2 2);
+} 

@@ -9,9 +9,15 @@ export default {
   theme: {
     extend: {
       colors: {
-        background: "var(--background)",
-        foreground: "var(--foreground)",
+        primary: 'var(--color-primary)',
+        secondary: 'var(--color-secondary)',
+        dark: 'var(--color-dark)',
+        gray: 'var(--color-gray)',
+        accent: 'var(--color-accent)',
       },
+      fontFamily: {
+        'suisse': ['Suisse Intl', 'sans-serif'],
+      }
     },
   },
   plugins: [],
