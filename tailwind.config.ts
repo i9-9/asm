@@ -17,6 +17,9 @@ export default {
       },
       fontFamily: {
         'suisse': ['Suisse Intl', 'sans-serif'],
+        'helvetica': ['Helvetica Now Display', 'sans-serif'],
+        'helvetica-bold': ['Helvetica Now Display', 'sans-serif'],
+        'scotch-display': ['scotch-display', 'sans-serif'],
       }
     },
   },

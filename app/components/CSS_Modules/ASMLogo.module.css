@@ -1,0 +1,37 @@
+/* ASMLogo.module.css */
+.logo {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px; /* Adjust the spacing between nodes */
+  }
+  
+  .node {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background-color: #fff; /* Initial color */
+    transition: background-color 0.3s ease;
+  }
+  
+  .node:hover {
+    background-color: #000; /* Inverted color on hover */
+  }
+  
+  /* Customize the position or color for each node */
+  .node1 {
+    /* Position or unique style for the first node */
+  }
+  .node2 {
+    /* Position or unique style for the second node */
+  }
+  .node3 {
+    /* Position or unique style for the third node */
+  }
+  .node4 {
+    /* Position or unique style for the fourth node */
+  }
+  .node5 {
+    /* Position or unique style for the fifth node */
+  }
+  

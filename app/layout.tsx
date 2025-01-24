@@ -13,9 +13,13 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body>
-        {children}
-      </body>
+      <head>
+        <link
+          rel="stylesheet"
+          href="https://use.typekit.net/epd0xsj.css"
+        ></link>
+      </head>
+      <body>{children}</body>
     </html>
   );
 }

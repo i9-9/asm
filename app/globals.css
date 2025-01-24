@@ -11,15 +11,32 @@
 }
 
 @font-face {
+  font-family: "Scotch-display", sans-serif;
+  font-weight: 500;
+  font-style: normal;
+}
+
+@font-face {
   font-family: 'Suisse Intl';
-  src: url('/fonts/SuisseIntl.woff2') format('woff2');
+  src: url('/fonts/SuisseIntlMono-Regular.woff2') format('woff2');
   font-weight: normal;
   font-style: normal;
 }
 
-body {
-  font-family: 'Suisse Intl', sans-serif;
+@font-face {
+  font-family: 'Helvetica Now Display';
+  src: url('/fonts/HelveticaNowDisplay-Bold.woff2') format('woff2');
+  font-weight: bold;
+  font-style: normal;
 }
+
+@font-face {
+  font-family: 'Helvetica Now Display';
+  src: url('/fonts/SuisseIntlMono-Regular.woff2') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+}
+
 
 @media (prefers-color-scheme: dark) {
   :root {
@@ -31,7 +48,8 @@ body {
 body {
   color: var(--foreground);
   background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: 'Helvetica Now Display', sans-serif;
+
 }
 
 .dot--white {

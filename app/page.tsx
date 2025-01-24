@@ -3,30 +3,39 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Dots from "./components/Dots";
+import Modulos from "../public/logo/modulos.svg";
 import Image from "next/image";
-
-const menuItems = ["PROJECTS", "SERVICES", "TOOLS", "CONTACT"];
+import Icon1 from "./components/icons/icon1";
+import Icon2 from "./components/icons/icon2";
+import Icon3 from "./components/icons/icon3";
+import Icon4 from "./components/icons/icon4";
 
 export default function Home() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  // const [hoveredCircle, setHoveredCircle] = useState<number | null>(null); // Track hovered circle
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
   };
 
+  const menuItems = ["Projects", "Services", "Tools", "Contact"];
+
   return (
-    <>
+    <div>
       {/* First Section */}
       <div className="relative w-screen h-screen">
         <div className="absolute inset-0">
           <Dots />
         </div>
         <div className="relative z-10 p-5 text-white">
-          <Image src="/logo/logo.svg" alt="Logo" width={355} height={74} />
+          {/* Logo Outside Menu */}
+          <div>
+            <Image src={Modulos} alt="My icon" width={500} height={500} />
+          </div>
 
-          {/* Hamburger Menu Icon or Cross Icon */}
+          {/* Hamburger Menu */}
           <div
-            className="absolute right-5 top-5 z-50 cursor-pointer"
+            className="absolute right-10 top-10 z-50 cursor-pointer fixed"
             onClick={toggleMenu}
           >
             <img
@@ -38,97 +47,58 @@ export default function Home() {
           <AnimatePresence>
             {isMenuOpen && (
               <motion.div
-                className="absolute top-0 right-0 w-full bg-gray-800 p-2 rounded-b-lg bg-secondary"
+                className="absolute top-0 right-0 w-full bg-gray-800 p-5 bg-secondary rounded-b-lg"
                 initial={{ height: 0 }}
                 animate={{ height: "auto" }}
                 exit={{ height: 0 }}
-                transition={{
-                  duration: 0.3,
-                  ...(isMenuOpen
-                    ? {}
-                    : { delay: (menuItems.length + 1) * 0.2 }),
-                }}
+                transition={{ duration: 0.3 }}
               >
-                <motion.div
-                  className="grid grid-cols-3 gap-4"
-                  initial={{
-                    opacity: 0,
-                    x: -50,
-                  }}
-                  animate={{
-                    opacity: 1,
-                    x: 0,
-                  }}
-                  exit={{
-                    opacity: 0,
-                    x: -50,
-                  }}
-                  transition={{ duration: 0.3 }}
-                >
-                  {/* Menu Items Column 1 (Li 1 and 2) */}
-                  <motion.ul
-                    className="list-none p-0 m-0 col-span-3 sm:col-span-1"
-                    initial={{
-                      opacity: 0,
-                      x: -50,
-                    }}
-                    animate={{
-                      opacity: 1,
-                      x: 0,
-                    }}
-                    exit={{
-                      opacity: 0,
-                      x: -50,
-                    }}
-                    transition={{ duration: 0.3 }}
-                  >
+                {/* Parent Container */}
+                <motion.div className="grid grid-cols-3 gap-4">
+                  {/* First Column - Logo */}
+                  <motion.div className="flex justify-center items-start">
+                    <Image
+                      src={Modulos}
+                      alt="My icon"
+                      width={600}
+                      height={600}
+                    />
+                  </motion.div>
+
+                  {/* Second Column - First Two Menu Items */}
+                  <motion.ul className="list-none p-0 m-0 flex flex-col">
                     {menuItems.slice(0, 2).map((item, index) => (
                       <motion.li
                         key={item}
                         className="font-suisse uppercase text-[68px] text-primary p-2 hover:text-accent transition-all duration-700 cursor-pointer"
                         initial={{ opacity: 0, x: -50 }}
                         animate={{ opacity: 1, x: 0 }}
-                        exit={{
-                          opacity: 0,
-                          x: -50,
-                          transition: { duration: 0 },
-                        }} // Instant exit animation
-                        transition={{ duration: 0.3, delay: index * 0.2 }}
+                        exit={{ opacity: 0, x: -50 }}
+                        transition={{
+                          duration: 0.3,
+                          exit: { duration: 0 },
+                          delay: index * 0.2,
+                        }}
                       >
                         {item}
                       </motion.li>
                     ))}
                   </motion.ul>
 
-                  {/* Menu Items Column 2 (Li 3 and 4) */}
-                  <motion.ul
-                    className="list-none p-0 m-0 col-span-3 sm:col-span-1"
-                    initial={{
-                      opacity: 0,
-                      x: -50,
-                    }}
-                    animate={{
-                      opacity: 1,
-                      x: 0,
-                    }}
-                    exit={{
-                      opacity: 0,
-                      x: -50,
-                    }}
-                    transition={{ duration: 0.3 }}
-                  >
-                    {menuItems.slice(2).map((item, index) => (
+                  {/* Third Column - Last Two Menu Items */}
+                  <motion.ul className="list-none p-0 m-0 flex flex-col">
+                    {menuItems.slice(2, 4).map((item, index) => (
                       <motion.li
                         key={item}
                         className="font-suisse uppercase text-[68px] text-primary p-2 hover:text-accent transition-all duration-700 cursor-pointer"
                         initial={{ opacity: 0, x: -50 }}
                         animate={{ opacity: 1, x: 0 }}
-                        exit={{
-                          opacity: 0,
-                          x: -50,
-                          transition: { duration: 0 },
-                        }} // Instant exit animation
-                        transition={{ duration: 0.3, delay: index * 0.2 }}
+                        exit={{ opacity: 0, x: -50 }}
+                        transition={{
+                          duration: 0.3,
+                          exit: { duration: 0 },
+                          delay: index * 0.2,
+                        }}
                       >
                         {item}
                       </motion.li>
@@ -139,40 +109,87 @@ export default function Home() {
             )}
           </AnimatePresence>
         </div>
+      </div>
 
-        {/* Rectangle at Bottom Left Corner */}
-        <div className="absolute bottom-10 left-10 w-[800px] h-8 bg-secondary z-10 rounded-md">
-          <div className="flex py-1 px-3 justify-between">
-            <p className="text-primary">ASSEMBLY</p>
-            <p className="text-primary">BS. AS. ARG</p>
-            <p className="text-primary">ZONE 3</p>
-            <p className="text-primary">2025</p>
+      {/* Additional sections */}
+      <div className="relative w-screen h-screen bg-dark">
+        <div className="absolute top-0 left-0 p-8">
+          <motion.div
+            initial={{ filter: "blur(20px)" }}
+            animate={{ filter: "blur(0px)" }}
+            transition={{ duration: 1, delay: 0 }}
+          >
+            <h2 className="text-4xl font-helvetica tracking-[-0.03em] text-[53px] leading-[72px] text-left text-primary">
+              At ASM, design and development come together to create
+              unique digital experiences. <br /> <br /> We build high-quality
+              websites and e-commerce platforms, integrating with tools like
+              Shopify and Tienda Nube. <br /> Our focus is on delivering
+              functional, expressive solutions for brands through a
+              professional, straightforward approach.
+            </h2>
+          </motion.div>
+          <div className="mt-8 flex justify-start items-center space-x-32">
+            <motion.div
+              className="w-48 h-48 text-primary"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 1, delay: 0.4 }}
+            >
+              <Icon1 />
+            </motion.div>
+
+            <motion.div
+              className="w-48 h-48 text-primary"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 1, delay: 0.8 }}
+            >
+              <Icon2 />
+            </motion.div>
+
+            <motion.div
+              className="w-48 h-48 text-primary"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 1, delay: 1.2 }}
+            >
+              <Icon3 />
+            </motion.div>
+
+            <motion.div
+              className="w-48 h-48 text-primary"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 1, delay: 1.6 }}
+            >
+              <Icon4 />
+            </motion.div>
           </div>
         </div>
       </div>
 
-      {/* Second Section */}
-<div className="relative w-screen h-screen">
-  <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center">
-    <h2 className="text-4xl font-bold text-white">
-      At ASM, design and development come together to create unique digital
-      experiences. We build high-quality websites and e-commerce platforms,
-      integrating with tools like Shopify and Tienda Nube. Our focus is on
-      delivering functional, expressive solutions for brands through a
-      professional, straightforward approach.
-    </h2>
-  </div>
-</div>
+      {/* Us section */}
 
-{/* Hamburger Menu */}
-<div className="relative z-10 p-5 text-white">
-  <div
-    className="absolute right-5 top-5 z-50 cursor-pointer"
-    onClick={toggleMenu}
-  >
-    <img
-      src={isMenuOpen ? "/icons/cross.svg" : "/icons/hamburger.svg"}
-      alt={isMenuOpen ? "Close Menu" : "Menu"}
-    />
-  </div>
-</div>
+      <div className="relative w-screen h-screen bg-dark">
+        <div className="absolute top-0 left-0 p-8">
+          <h2 className="font-bold text-primary text-6xl tracking-tighter">
+            US
+          </h2>
+        </div>
+        <div className="absolute bottom-0 left-0 p-8">
+          <Image src={Modulos} alt="My icon" width={1000} height={1000} />
+        </div>
+      </div>
+
+      {/* Location section */}
+
+      <div className="relative w-screen h-screen bg-dark">
+        <div className="absolute top-0 left-0 p-8">
+        </div>
+        <div className="absolute bottom-0 left-0 p-8">
+          <h3 className="leading-[120px] font-scotch-display text-primary text-[140px]">ASSEMBLY BS.AS <br/> INFO@ASM.STUDIO <br/> +54 911 4075 3025</h3>
+        </div>
+      </div>
+    </div>
+  );
+}
