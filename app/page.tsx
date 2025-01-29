@@ -1,7 +1,9 @@
 "use client";
 
-import React, { useState } from "react";
+
+import React, { useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useInView } from "motion/react"
 import Dots from "./components/Dots";
 import Modulos from "../public/logo/modulos.svg";
 import Image from "next/image";
@@ -12,13 +14,53 @@ import Icon4 from "./components/icons/icon4";
 
 export default function Home() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  // const [hoveredCircle, setHoveredCircle] = useState<number | null>(null); // Track hovered circle
+  const menuRef = useRef<HTMLDivElement>(null); // Ref to measure the menu height
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
   };
 
   const menuItems = ["Projects", "Services", "Tools", "Contact"];
+
+  // Variants for the parent container
+  const menuVariants = {
+    open: {
+      scaleY: 1,
+      opacity: 1,
+      transition: {
+        duration: 0.3,
+        ease: "easeInOut",
+        staggerChildren: 0.05,
+        when: "beforeChildren",
+      },
+    },
+    closed: {
+      scaleY: 0,
+      opacity: 0,
+      transition: {
+        duration: 0.2,
+        ease: "easeInOut",
+        staggerChildren: 0.05,
+        staggerDirection: -1,
+        when: "afterChildren",
+      },
+    },
+  };
+  
+
+  // Variants for the menu items and logo
+  const itemVariants = {
+    open: {
+      opacity: 1,
+      x: 0,
+      transition: { duration: 0.3 },
+    },
+    closed: {
+      opacity: 0,
+      x: -50,
+      transition: { duration: 0.3 },
+    },
+  };
 
   return (
     <div>
@@ -30,12 +72,12 @@ export default function Home() {
         <div className="relative z-10 p-5 text-white">
           {/* Logo Outside Menu */}
           <div>
-            <Image src={Modulos} alt="My icon" width={500} height={500} />
+            <Image src={Modulos} alt="My icon" width={300} height={300} />
           </div>
 
           {/* Hamburger Menu */}
           <div
-            className="absolute right-10 top-10 z-50 cursor-pointer fixed"
+            className="absolute right-10 top-10 z-50 cursor-pointer "
             onClick={toggleMenu}
           >
             <img
@@ -47,38 +89,35 @@ export default function Home() {
           <AnimatePresence>
             {isMenuOpen && (
               <motion.div
-                className="absolute top-0 right-0 w-full bg-gray-800 p-5 bg-secondary rounded-b-lg"
-                initial={{ height: 0 }}
-                animate={{ height: "auto" }}
-                exit={{ height: 0 }}
-                transition={{ duration: 0.3 }}
+                className="absolute top-0 right-0 w-full bg-gray-800 p-5 bg-secondary rounded-b-lg overflow-hidden"
+                variants={menuVariants}
+                initial="closed"
+                animate="open"
+                exit="closed"
+                ref={menuRef}
               >
                 {/* Parent Container */}
                 <motion.div className="grid grid-cols-3 gap-4">
                   {/* First Column - Logo */}
-                  <motion.div className="flex justify-center items-start">
+                  <motion.div
+                    className="flex justify-start items-start pt-7 pl-5"
+                    variants={itemVariants}
+                  >
                     <Image
                       src={Modulos}
                       alt="My icon"
-                      width={600}
-                      height={600}
+                      width={300}
+                      height={300}
                     />
                   </motion.div>
 
                   {/* Second Column - First Two Menu Items */}
                   <motion.ul className="list-none p-0 m-0 flex flex-col">
-                    {menuItems.slice(0, 2).map((item, index) => (
+                    {menuItems.slice(0, 2).map((item) => (
                       <motion.li
                         key={item}
                         className="font-suisse uppercase text-[68px] text-primary p-2 hover:text-accent transition-all duration-700 cursor-pointer"
-                        initial={{ opacity: 0, x: -50 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        exit={{ opacity: 0, x: -50 }}
-                        transition={{
-                          duration: 0.3,
-                          exit: { duration: 0 },
-                          delay: index * 0.2,
-                        }}
+                        variants={itemVariants}
                       >
                         {item}
                       </motion.li>
@@ -87,18 +126,11 @@ export default function Home() {
 
                   {/* Third Column - Last Two Menu Items */}
                   <motion.ul className="list-none p-0 m-0 flex flex-col">
-                    {menuItems.slice(2, 4).map((item, index) => (
+                    {menuItems.slice(2, 4).map((item) => (
                       <motion.li
                         key={item}
                         className="font-suisse uppercase text-[68px] text-primary p-2 hover:text-accent transition-all duration-700 cursor-pointer"
-                        initial={{ opacity: 0, x: -50 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        exit={{ opacity: 0, x: -50 }}
-                        transition={{
-                          duration: 0.3,
-                          exit: { duration: 0 },
-                          delay: index * 0.2,
-                        }}
+                        variants={itemVariants}
                       >
                         {item}
                       </motion.li>
@@ -119,7 +151,7 @@ export default function Home() {
             animate={{ filter: "blur(0px)" }}
             transition={{ duration: 1, delay: 0 }}
           >
-            <h2 className="text-4xl font-helvetica tracking-[-0.03em] text-[53px] leading-[72px] text-left text-primary">
+            <h2 className="text-4xl font-helvetica tracking-[-0.03em] text-[53px] leading-[62px] text-left text-primary">
               At ASM, design and development come together to create
               unique digital experiences. <br /> <br /> We build high-quality
               websites and e-commerce platforms, integrating with tools like
@@ -187,7 +219,7 @@ export default function Home() {
         <div className="absolute top-0 left-0 p-8">
         </div>
         <div className="absolute bottom-0 left-0 p-8">
-          <h3 className="leading-[120px] font-scotch-display text-primary text-[140px]">ASSEMBLY BS.AS <br/> INFO@ASM.STUDIO <br/> +54 911 4075 3025</h3>
+          <h3 className="leading-[84px] font-scotch-display text-primary text-[96px]">ASSEMBLY BS.AS <br/> INFO@ASM.STUDIO <br/> +54 911 4075 3025</h3>
         </div>
       </div>
     </div>
