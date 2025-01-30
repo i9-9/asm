@@ -2,8 +2,7 @@
 
 
 import React, { useState, useRef } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { useInView } from "motion/react"
+import { motion, AnimatePresence, useInView } from "framer-motion";
 import Dots from "./components/Dots";
 import Modulos from "../public/logo/modulos.svg";
 import Image from "next/image";
@@ -15,6 +14,15 @@ import Icon4 from "./components/icons/icon4";
 export default function Home() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null); // Ref to measure the menu height
+
+  const ref = useRef(null);
+  const isInView = useInView(ref, {
+    threshold: 0.1, // Trigger when 10% of the element is visible
+    triggerOnce: true, // Only trigger once (optional)
+  });
+
+  console.log('Is in view:', isInView);
+
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -144,11 +152,11 @@ export default function Home() {
       </div>
 
       {/* Additional sections */}
-      <div className="relative w-screen h-screen bg-dark">
+      <div ref={ref} className="relative w-screen h-screen bg-dark">
         <div className="absolute top-0 left-0 p-8">
           <motion.div
             initial={{ filter: "blur(20px)" }}
-            animate={{ filter: "blur(0px)" }}
+            animate={isInView ? { filter: 'blur(0px)' } : {}}
             transition={{ duration: 1, delay: 0 }}
           >
             <h2 className="text-4xl font-helvetica tracking-[-0.03em] text-[53px] leading-[62px] text-left text-primary">
@@ -164,7 +172,7 @@ export default function Home() {
             <motion.div
               className="w-48 h-48 text-primary"
               initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
+              animate={isInView ? { opacity: 1 } : {}}
               transition={{ duration: 1, delay: 0.4 }}
             >
               <Icon1 />
@@ -173,7 +181,7 @@ export default function Home() {
             <motion.div
               className="w-48 h-48 text-primary"
               initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
+              animate={isInView ? { opacity: 1 } : {}}
               transition={{ duration: 1, delay: 0.8 }}
             >
               <Icon2 />
@@ -182,7 +190,7 @@ export default function Home() {
             <motion.div
               className="w-48 h-48 text-primary"
               initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
+              animate={isInView ? { opacity: 1 } : {}}
               transition={{ duration: 1, delay: 1.2 }}
             >
               <Icon3 />
@@ -191,7 +199,7 @@ export default function Home() {
             <motion.div
               className="w-48 h-48 text-primary"
               initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
+              animate={isInView ? { opacity: 1 } : {}}
               transition={{ duration: 1, delay: 1.6 }}
             >
               <Icon4 />
