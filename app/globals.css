@@ -2,6 +2,12 @@
 @tailwind components;
 @tailwind utilities;
 
+html, body {
+  overflow-y: auto;
+  height: 100%;
+}
+
+
 :root {
   --color-primary: #ef3d37; /* Primary color */
   --color-secondary: #f4f3e5; /* Secondary color */
@@ -62,3 +68,4 @@ body {
 .menu-container {
   transform-origin: top;
 }
+
