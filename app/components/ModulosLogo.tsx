@@ -45,8 +45,8 @@ export default function ModulosLogo({ theme }: ModulosLogoProps) {
   const wavePatterns = {
     // Onda horizontal - de izquierda a derecha
     horizontalWave: () => {
-      const totalModules = logoPathsData.length;
-      const modulesPerColumn = Math.ceil(totalModules / columns);
+      // Ya no declaramos totalModules aquí para evitar el warning
+      const modulesPerColumn = Math.ceil(logoPathsData.length / columns);
       
       // Animar cada columna con un retraso incremental
       const animateWave = (colIndex: number) => {
@@ -64,7 +64,7 @@ export default function ModulosLogo({ theme }: ModulosLogoProps) {
         
         // Obtener módulos de esta columna
         const startIdx = colIndex * modulesPerColumn;
-        const endIdx = Math.min(startIdx + modulesPerColumn, totalModules);
+        const endIdx = Math.min(startIdx + modulesPerColumn, logoPathsData.length);
         const columnModules = logoPathsData.slice(startIdx, endIdx).map(m => m.id);
         
         // Activar columna
@@ -95,9 +95,7 @@ export default function ModulosLogo({ theme }: ModulosLogoProps) {
     
     // Onda vertical - de arriba hacia abajo
     verticalWave: () => {
-      const totalModules = logoPathsData.length;
-      
-      // Estimar la matriz de módulos
+      // Estimar la matriz de módulos - sin declarar totalModules que no se usa
       const moduleMatrix: string[][] = Array(rows).fill(0).map(() => Array(columns).fill(''));
       
       // Llenar la matriz con IDs de módulos
@@ -154,9 +152,7 @@ export default function ModulosLogo({ theme }: ModulosLogoProps) {
     
     // Onda diagonal - de arriba izquierda a abajo derecha
     diagonalWave: () => {
-      const totalModules = logoPathsData.length;
-      
-      // Estimar la matriz de módulos
+      // Estimar la matriz de módulos - sin declarar totalModules que no se usa
       const moduleMatrix: string[][] = Array(rows).fill(0).map(() => Array(columns).fill(''));
       
       // Llenar la matriz con IDs de módulos
@@ -228,8 +224,7 @@ export default function ModulosLogo({ theme }: ModulosLogoProps) {
     
     // Onda de doble columna - activando columnas alternas
     doubleWave: () => {
-      const totalModules = logoPathsData.length;
-      const modulesPerColumn = Math.ceil(totalModules / columns);
+      const modulesPerColumn = Math.ceil(logoPathsData.length / columns);
       
       // Animar columnas con un patrón alterno
       const animateDoubleWave = (startCol: number) => {
@@ -250,7 +245,7 @@ export default function ModulosLogo({ theme }: ModulosLogoProps) {
         
         for (let c = startCol; c < Math.min(startCol + 2, columns); c++) {
           const startIdx = c * modulesPerColumn;
-          const endIdx = Math.min(startIdx + modulesPerColumn, totalModules);
+          const endIdx = Math.min(startIdx + modulesPerColumn, logoPathsData.length);
           
           logoPathsData.slice(startIdx, endIdx).forEach(module => {
             waveModules.push(module.id);
@@ -303,7 +298,6 @@ export default function ModulosLogo({ theme }: ModulosLogoProps) {
     
     // Onda sinusoidal - Efecto de ola fluida
     sinusoidalWave: () => {
-      const totalModules = logoPathsData.length;
       const framesCount = 20; // Número de "frames" para la animación completa
       
       // Función para simular una onda sinusoidal a través de las columnas
@@ -318,8 +312,8 @@ export default function ModulosLogo({ theme }: ModulosLogoProps) {
           
           // Si el valor del seno es positivo (parte superior de la onda), activar la columna
           if (sinValue > 0.3) {
-            const startIdx = col * Math.ceil(totalModules / columns);
-            const endIdx = Math.min(startIdx + Math.ceil(totalModules / columns), totalModules);
+            const startIdx = col * Math.ceil(logoPathsData.length / columns);
+            const endIdx = Math.min(startIdx + Math.ceil(logoPathsData.length / columns), logoPathsData.length);
             
             logoPathsData.slice(startIdx, endIdx).forEach(module => {
               waveModules.push(module.id);
@@ -386,6 +380,7 @@ export default function ModulosLogo({ theme }: ModulosLogoProps) {
   };
   
   // Iniciar la animación cuando el componente se monta
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     const initialTimeout = window.setTimeout(() => {
       if (isMounted.current) {
