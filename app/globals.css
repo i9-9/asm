@@ -14,6 +14,10 @@ html, body {
   --color-dark: #212122; /* Dark color */
   --color-gray: #5e6161; /* Gray color */
   --color-accent: #39a2ae; /* Accent color */
+  --bg-color: #f4f4f5;
+  --text-color: #212122;
+  --primary-color: #4f46e5;
+  --secondary-color: #6366f1;
 }
 
 @font-face {
@@ -48,14 +52,18 @@ html, body {
   :root {
     --background: #0a0a0a;
     --foreground: #ededed;
+    --bg-color: #212122;
+    --text-color: #ffffff;
+    --primary-color: #818cf8;
+    --secondary-color: #a5b4fc;
   }
 }
 
 body {
-  color: var(--foreground);
-  background: var(--background);
+  color: var(--text-color);
+  background: var(--bg-color);
   font-family: 'Helvetica Now Display', sans-serif;
-
+  transition: background-color 0.3s, color 0.3s;
 }
 
 .dot--white {
@@ -67,5 +75,12 @@ body {
 
 .menu-container {
   transform-origin: top;
+}
+
+.dark {
+  --bg-color: #212122;
+  --text-color: #ffffff;
+  --primary-color: #818cf8;
+  --secondary-color: #a5b4fc;
 }
 
