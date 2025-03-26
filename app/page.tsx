@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import SplashScreen from "./components/SplashScreen";
 import Navbar from "./components/Navbar";
-import Hero from "./components/Hero";
+import HeroNew from "./components/HeroNew";
 
 export default function Home() {
   const [splashScreenFinished, setSplashScreenFinished] = useState(false);
@@ -46,11 +46,11 @@ export default function Home() {
             className="flex flex-col h-screen"
           >
             {/* Navbar Component */}
-            <Navbar />
+            <Navbar theme={theme} setTheme={setTheme} />
 
             {/* Hero Section - ahora ocupa el resto de la pantalla correctamente */}
             <div className="flex-1">
-              <Hero theme={theme} toggleTheme={toggleTheme} />
+              <HeroNew theme={theme} toggleTheme={toggleTheme} />
             </div>
           </motion.div>
         )}
