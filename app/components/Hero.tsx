@@ -20,9 +20,9 @@ export default function Hero({ theme, toggleTheme }: HeroProps) {
       animate={{ opacity: 1 }}
       transition={{ duration: 0.8, ease: "easeOut" }}
     >
-      {/* Logo centrado con ajuste manual - movido aún más arriba */}
-      <div className="absolute top-0 left-0 right-0 bottom-0 m-auto w-[80%] max-w-[700px] h-[80%] max-h-[700px] flex items-center justify-center">
-        <div className="w-full h-full mt-[-120px]">
+      {/* Logo centrado y posicionado mucho más arriba */}
+      <div className="absolute inset-0 flex items-start justify-center pt-[10vh]">
+        <div className="w-[80%] max-w-[700px] h-[60vh]">
           <ModulosLogo theme={theme} />
         </div>
       </div>

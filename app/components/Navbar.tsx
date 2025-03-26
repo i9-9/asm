@@ -9,16 +9,16 @@ export default function Navbar() {
   const [currentTime, setCurrentTime] = useState<string>("00:00:00");
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   
-  // Actualizar el reloj en tiempo real - Lógica mejorada
+  // Actualizar el reloj en tiempo real - Lógica mejorada y corregida para TypeScript
   useEffect(() => {
     const updateClock = () => {
       // Obtener la hora actual directamente con el locale de Argentina
       const options = { 
         timeZone: 'America/Argentina/Buenos_Aires',
         hour12: false,
-        hour: '2-digit',
-        minute: '2-digit',
-        second: '2-digit'
+        hour: "2-digit" as const,
+        minute: "2-digit" as const,
+        second: "2-digit" as const
       };
       
       const formatter = new Intl.DateTimeFormat('en-US', options);
@@ -64,7 +64,7 @@ export default function Navbar() {
   // Elementos de contacto para animación secuencial
   const contactItems = [
     "+ info@modulos.com",
-    "+ +54 11 1234-5678",
+    "+ 54 11 1234-5678",
     "+ Buenos Aires, Argentina"
   ];
 
@@ -93,14 +93,14 @@ export default function Navbar() {
           {/* Espacio vacío */}
           <div className="col-span-5"></div>
           
-          {/* Buenos Aires Information - Sin GMT-3 */}
+          {/* Buenos Aires Information - Alineado a la izquierda */}
           <div className="col-span-3">
             <div 
-              className="text-[17px] leading-tight"
+              className="text-[17px] leading-tight text-left"
               style={{ color: themeColor }}
             >
               + Buenos Aires, Argentina<br />
-              <span className="pl-4">{currentTime}</span>
+              <span className="text-left">{currentTime}</span>
             </div>
           </div>
           

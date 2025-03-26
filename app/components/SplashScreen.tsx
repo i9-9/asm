@@ -60,17 +60,17 @@ export default function SplashScreen({ onFinish }: { onFinish: () => void }) {
     ));
   };
 
-  // Configuración de las columnas con velocidades ajustadas
+  // Configuración de las columnas con velocidades MÁS LENTAS
   const columns = isMobile 
     ? [
-        { direction: "down", duration: 35 },  // Columna 1: hacia abajo
-        { direction: "up", duration: 36 },    // Columna 2: hacia arriba
+        { direction: "down", duration: 60 },  // Columna 1: hacia abajo - más lento
+        { direction: "up", duration: 65 },    // Columna 2: hacia arriba - más lento
       ]
     : [
-        { direction: "down", duration: 37 },  // Columna 1: hacia abajo
-        { direction: "up", duration: 34 },    // Columna 2: hacia arriba
-        { direction: "down", duration: 33 },  // Columna 3: hacia abajo
-        { direction: "up", duration: 32 }     // Columna 4: hacia arriba
+        { direction: "down", duration: 60 },  // Columna 1: hacia abajo - más lento
+        { direction: "up", duration: 65 },    // Columna 2: hacia arriba - más lento
+        { direction: "down", duration: 70 },  // Columna 3: hacia abajo - más lento
+        { direction: "up", duration: 75 }     // Columna 4: hacia arriba - más lento
       ];
 
   return (
@@ -99,7 +99,7 @@ export default function SplashScreen({ onFinish }: { onFinish: () => void }) {
                     y: column.direction === "down" ? "-150%" : "50%" 
                   }}
                   transition={{
-                    duration: isLoading ? column.duration : 1.5,
+                    duration: isLoading ? column.duration : 3,
                     repeat: Infinity,
                     repeatType: "loop", 
                     ease: "linear"
@@ -119,7 +119,7 @@ export default function SplashScreen({ onFinish }: { onFinish: () => void }) {
                     y: column.direction === "down" ? "-50%" : "-50%"
                   }}
                   transition={{
-                    duration: isLoading ? column.duration : 1.5,
+                    duration: isLoading ? column.duration : 3,
                     repeat: Infinity,
                     repeatType: "loop",
                     ease: "linear"
