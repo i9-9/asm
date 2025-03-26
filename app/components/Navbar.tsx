@@ -5,7 +5,13 @@ import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import Image from "next/image";
 
-export default function Navbar() {
+// Añadir esta interfaz de props
+interface NavbarProps {
+  theme: string;
+  setTheme: React.Dispatch<React.SetStateAction<string>>;
+}
+
+export default function Navbar({ theme, setTheme }: NavbarProps) {
   const [currentTime, setCurrentTime] = useState<string>("00:00:00");
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   
@@ -58,9 +64,6 @@ export default function Navbar() {
     setIsMenuOpen(!isMenuOpen);
   };
 
-  // Color del tema para elementos del menú
-  const themeColor = "#DB4C40"; // Rojo del tema
-
   // Elementos de contacto para animación secuencial
   const contactItems = [
     "+ info@modulos.com",
@@ -97,7 +100,7 @@ export default function Navbar() {
           <div className="col-span-3">
             <div 
               className="text-[17px] leading-tight text-left"
-              style={{ color: themeColor }}
+              style={{ color: theme }}
             >
               + Buenos Aires, Argentina<br />
               <span className="text-left">{currentTime}</span>
@@ -114,7 +117,7 @@ export default function Navbar() {
               {/* Línea superior */}
               <motion.span
                 className="absolute block h-[2px] w-full rounded-sm"
-                style={{ backgroundColor: themeColor }}
+                style={{ backgroundColor: theme }}
                 initial={{ top: 0 }}
                 animate={{ 
                   top: isMenuOpen ? "50%" : 0,
@@ -128,7 +131,7 @@ export default function Navbar() {
               <motion.span
                 className="absolute block h-[2px] w-full rounded-sm"
                 style={{ 
-                  backgroundColor: themeColor,
+                  backgroundColor: theme,
                   top: "50%",
                   transform: "translateY(-50%)" 
                 }}
@@ -140,7 +143,7 @@ export default function Navbar() {
               {/* Línea inferior */}
               <motion.span
                 className="absolute block h-[2px] w-full rounded-sm"
-                style={{ backgroundColor: themeColor }}
+                style={{ backgroundColor: theme }}
                 initial={{ bottom: 0 }}
                 animate={{ 
                   bottom: isMenuOpen ? "50%" : 0,
@@ -167,7 +170,7 @@ export default function Navbar() {
             <div className="px-[30px] py-6 grid grid-cols-12 gap-[20px] min-h-screen">
               {/* Navegación principal en inglés */}
               <div className="col-span-4 pt-24">
-                <h2 className="text-2xl font-bold mb-8" style={{ color: themeColor }}>NAVIGATION</h2>
+                <h2 className="text-2xl font-bold mb-8" style={{ color: theme }}>NAVIGATION</h2>
                 <ul className="space-y-4">
                   {['Home', 'About', 'Services', 'Portfolio', 'Contact'].map((item, i) => (
                     <motion.li 
@@ -179,7 +182,7 @@ export default function Navbar() {
                       <Link 
                         href="#" 
                         className="text-3xl font-medium text-white hover:text-opacity-80 transition-colors"
-                        style={{ color: themeColor }}
+                        style={{ color: theme }}
                       >
                         {item}
                       </Link>
@@ -190,7 +193,7 @@ export default function Navbar() {
               
               {/* Servicios destacados en inglés */}
               <div className="col-span-4 pt-24">
-                <h2 className="text-2xl font-bold mb-8" style={{ color: themeColor }}>SERVICES</h2>
+                <h2 className="text-2xl font-bold mb-8" style={{ color: theme }}>SERVICES</h2>
                 <ul className="space-y-3">
                   {['UX/UI Design', 'Web Development', 'Branding', 'Consulting', 'Digital Marketing'].map((item, i) => (
                     <motion.li 
@@ -202,7 +205,7 @@ export default function Navbar() {
                       <Link 
                         href="#" 
                         className="text-xl transition-colors hover:opacity-80"
-                        style={{ color: themeColor, opacity: 0.8 }}
+                        style={{ color: theme, opacity: 0.8 }}
                       >
                         {item}
                       </Link>
@@ -213,7 +216,7 @@ export default function Navbar() {
               
               {/* Información de contacto en inglés - Con animación secuencial */}
               <div className="col-span-4 pt-24">
-                <h2 className="text-2xl font-bold mb-8" style={{ color: themeColor }}>CONTACT</h2>
+                <h2 className="text-2xl font-bold mb-8" style={{ color: theme }}>CONTACT</h2>
                 <ul className="space-y-4">
                   {contactItems.map((item, i) => (
                     <motion.li
@@ -221,7 +224,7 @@ export default function Navbar() {
                       initial={{ opacity: 0, x: -20 }}
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ delay: i * 0.1 + 0.5 }}
-                      style={{ color: themeColor, opacity: 0.8 }}
+                      style={{ color: theme, opacity: 0.8 }}
                     >
                       {item}
                     </motion.li>
@@ -245,7 +248,7 @@ export default function Navbar() {
                       animate={{ opacity: 1, scale: 1 }}
                       transition={{ delay: social.delay }}
                     >
-                      <Link href="#" style={{ color: themeColor }} className="hover:opacity-80 transition-opacity">
+                      <Link href="#" style={{ color: theme }} className="hover:opacity-80 transition-opacity">
                         <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                           <path fillRule="evenodd" d={social.icon} clipRule="evenodd"></path>
                         </svg>
