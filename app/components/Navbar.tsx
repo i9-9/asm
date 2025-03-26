@@ -71,6 +71,17 @@ export default function Navbar({ theme, setTheme }: NavbarProps) {
     "+ Buenos Aires, Argentina"
   ];
 
+  useEffect(() => {
+    // Este efecto se ejecuta cuando cambia el tema
+    console.log(`Tema actual: ${theme}`);
+    
+    // También podemos sincronizar el tema con localStorage
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme && savedTheme !== theme) {
+      setTheme(savedTheme);
+    }
+  }, [theme, setTheme]);
+
   return (
     <>
       <motion.nav
