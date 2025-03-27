@@ -9,6 +9,8 @@ html, body {
 
 
 :root {
+  --background: #F7F7F7;
+  --text: #202021;
   --color-primary: #ef3d37; /* Primary color */
   --color-secondary: #f4f3e5; /* Secondary color */
   --color-dark: #212122; /* Dark color */
@@ -18,6 +20,7 @@ html, body {
   --text-color: #212122;
   --primary-color: #4f46e5;
   --secondary-color: #6366f1;
+  --accent: #DB4C40;
 }
 
 @font-face {
@@ -50,7 +53,7 @@ html, body {
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
+    --background: #202021;
     --foreground: #ededed;
     --bg-color: #212122;
     --text-color: #ffffff;
@@ -60,10 +63,10 @@ html, body {
 }
 
 body {
-  color: var(--text-color);
-  background: var(--bg-color);
+  background-color: var(--background);
+  color: var(--text);
   font-family: 'Helvetica Now Display', sans-serif;
-  transition: background-color 0.3s, color 0.3s;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 .dot--white {
@@ -78,6 +81,8 @@ body {
 }
 
 .dark {
+  --background: #202021;
+  --text: #F7F7F7;
   --bg-color: #212122;
   --text-color: #ffffff;
   --primary-color: #818cf8;

@@ -23,9 +23,7 @@ export default function AnimatedModularLogo({
 
   // Animation effect
   useEffect(() => {
-    let intervalId: NodeJS.Timeout;
-    
-    const animate = () => {
+    const intervalId = setInterval(() => {
       const randomPathIndices = Array.from(
         { length: Math.floor(Math.random() * 5) + 3 },
         () => Math.floor(Math.random() * pathData.length)
@@ -36,13 +34,9 @@ export default function AnimatedModularLogo({
       setTimeout(() => {
         setActivePaths([]);
       }, 300);
-    };
+    }, 1000);
     
-    intervalId = setInterval(animate, 1000);
-    
-    return () => {
-      clearInterval(intervalId);
-    };
+    return () => clearInterval(intervalId);
   }, [pathData]);
 
   return (

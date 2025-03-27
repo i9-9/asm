@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
 import SplashScreen from "./components/SplashScreen";
 import Navbar from "./components/Navbar";
 import HeroNew from "./components/HeroNew";
@@ -10,51 +9,39 @@ export default function Home() {
   const [splashScreenFinished, setSplashScreenFinished] = useState(false);
   const [theme, setTheme] = useState('dark');
 
-  // Función para alternar el tema
-  const toggleTheme = () => {
-    const newTheme = theme === 'dark' ? 'light' : 'dark';
-    setTheme(newTheme);
-    // Guardar la preferencia en localStorage
-    localStorage.setItem('theme', newTheme);
-    // Aplicar clase al elemento html/body para cambios globales
-    document.documentElement.className = newTheme;
-  };
-
-  // Efecto para recuperar el tema del localStorage al cargar
   useEffect(() => {
-    const savedTheme = localStorage.getItem('theme');
-    if (savedTheme) {
-      setTheme(savedTheme);
-      document.documentElement.className = savedTheme;
-    }
+    // Recuperar theme al inicio
+    const savedTheme = localStorage.getItem('theme') || 'dark';
+    setTheme(savedTheme);
+    
+    // Aplicar el theme inmediatamente
+    document.documentElement.classList.toggle('dark', savedTheme === 'dark');
+    document.body.style.backgroundColor = savedTheme === 'dark' ? '#202021' : '#F7F7F7';
+    document.body.style.color = savedTheme === 'dark' ? '#F7F7F7' : '#202021';
   }, []);
 
+  useEffect(() => {
+    // Sincronizar cambios de theme
+    document.documentElement.classList.toggle('dark', theme === 'dark');
+    localStorage.setItem('theme', theme);
+    document.body.style.backgroundColor = theme === 'dark' ? '#202021' : '#F7F7F7';
+    document.body.style.color = theme === 'dark' ? '#F7F7F7' : '#202021';
+  }, [theme]);
+
+  const toggleTheme = () => {
+    setTheme(theme === 'dark' ? 'light' : 'dark');
+  };
+
   return (
-    <div className={`h-screen overflow-hidden transition-colors duration-300 ${
-      theme === 'dark' ? 'bg-[#212122] text-white' : 'bg-[#f4f4f5] text-[#212122]'
-    }`}>
-      {!splashScreenFinished && (
+    <div className={`min-h-screen transition-colors duration-300 ${theme}`}>
+      {!splashScreenFinished ? (
         <SplashScreen onFinish={() => setSplashScreenFinished(true)} />
+      ) : (
+        <>
+          <Navbar theme={theme} />
+          <HeroNew theme={theme} toggleTheme={toggleTheme} />
+        </>
       )}
-
-      <AnimatePresence>
-        {splashScreenFinished && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.5 }}
-            className="flex flex-col h-screen"
-          >
-            {/* Navbar Component */}
-            <Navbar theme={theme} setTheme={setTheme} />
-
-            {/* Hero Section - ahora ocupa el resto de la pantalla correctamente */}
-            <div className="flex-1">
-              <HeroNew theme={theme} toggleTheme={toggleTheme} />
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
     </div>
   );
 }

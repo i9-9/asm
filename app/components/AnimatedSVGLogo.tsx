@@ -1,6 +1,5 @@
 "use client";
 
-import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 
 interface AnimatedSVGLogoProps {
@@ -8,49 +7,14 @@ interface AnimatedSVGLogoProps {
   width?: string;
   height?: string;
   color?: string;
-  hoverColor?: string;
 }
 
 export default function AnimatedSVGLogo({
   svgPath,
   width = "500px",
   height = "500px",
-  color = "#DB4C40",
-  hoverColor = "#FFFFFF"
+  color = "#DB4C40"
 }: AnimatedSVGLogoProps) {
-  // Remove unused isAnimating state or use it
-  // const [isAnimating, setIsAnimating] = useState(false);
-  const [activePaths, setActivePaths] = useState<string[]>([]);
-
-  // Animation effect
-  useEffect(() => {
-    let intervalId: NodeJS.Timeout;
-    
-    // Function to animate paths
-    // Remove unused getColumnPaths or use it
-    /*
-    const getColumnPaths = () => {
-      // Implementation would go here
-      return [];
-    };
-    */
-    
-    const animate = () => {
-      // Placeholder animation - in a real component, we would implement proper path selection
-      setActivePaths(['path1', 'path2']);
-      
-      setTimeout(() => {
-        setActivePaths([]);
-      }, 500);
-    };
-    
-    intervalId = setInterval(animate, 2000);
-    
-    return () => {
-      clearInterval(intervalId);
-    };
-  }, []);
-
   return (
     <motion.div
       className="svg-container"
