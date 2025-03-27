@@ -12,15 +12,23 @@ const nextConfig = {
     // Ignorar errores de TypeScript durante el build
     ignoreBuildErrors: false,
   },
+  // Actualizar redirects para manejar rutas antiguas
   async redirects() {
     return [
       {
         source: '/components/:path*',
         destination: '/',
-        permanent: false,
+        permanent: true,
       },
+      {
+        source: '/icons/:path*',
+        destination: '/',
+        permanent: true,
+      }
     ];
-  }
+  },
+  // Añadir pageExtensions para especificar exactamente qué archivos son páginas
+  pageExtensions: ['js', 'jsx', 'ts', 'tsx']
 }
 
 module.exports = nextConfig 
