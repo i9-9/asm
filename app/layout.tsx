@@ -4,7 +4,6 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "ASSEMBLY STUDIO",
   description: "Design & Development Studio",
-  viewport: "width=device-width, initial-scale=1",
 };
 
 export default function RootLayout({

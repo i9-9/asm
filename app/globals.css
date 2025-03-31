@@ -5,8 +5,14 @@
 html, body {
   overflow-y: auto;
   height: 100%;
+  -ms-overflow-style: none;  /* IE y Edge */
+  scrollbar-width: none;  /* Firefox */
 }
 
+html::-webkit-scrollbar,
+body::-webkit-scrollbar {
+  display: none;
+}
 
 :root {
   --background: #F7F7F7;
@@ -87,5 +93,16 @@ body {
   --text-color: #ffffff;
   --primary-color: #818cf8;
   --secondary-color: #a5b4fc;
+}
+
+/* Ocultar scrollbar para Chrome, Safari y Opera */
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* Ocultar scrollbar para IE, Edge y Firefox */
+.scrollbar-hide {
+  -ms-overflow-style: none;  /* IE y Edge */
+  scrollbar-width: none;  /* Firefox */
 }
 

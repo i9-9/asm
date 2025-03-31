@@ -64,7 +64,7 @@ export default function Navbar({ theme }: Omit<NavbarProps, 'setTheme'>) {
       <motion.nav
         className={`w-full px-[30px] py-4 md:py-6 fixed top-0 left-0 right-0 ${
           isMenuOpen ? 'z-50' : 'z-40'
-        } bg-transparent`}
+        } ${theme === 'dark' ? 'bg-[#202021]' : 'bg-[#F7F7F7]'} transition-colors duration-300`}
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
@@ -136,7 +136,7 @@ export default function Navbar({ theme }: Omit<NavbarProps, 'setTheme'>) {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
           >
-            <div className="px-[30px] py-20">
+            <div className="px-[30px] pt-40 pb-20">
               {/* Menú simplificado con items en rojo */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 {/* Navegación */}
@@ -151,7 +151,23 @@ export default function Navbar({ theme }: Omit<NavbarProps, 'setTheme'>) {
                         transition={{ delay: i * 0.1 }}
                       >
                         <Link 
-                          href="#" 
+                          href="#"
+                          onClick={(e) => {
+                            if (item === 'Portfolio') {
+                              e.preventDefault();
+                              setIsMenuOpen(false); // Primero cerramos el menú
+                              document.body.style.overflow = 'unset'; // Aseguramos que el scroll esté habilitado
+                              setTimeout(() => {    
+                                const section = document.getElementById('selected-works');
+                                if (section) {
+                                  section.scrollIntoView({ 
+                                    behavior: 'smooth',
+                                    block: 'start'
+                                  });
+                                }
+                              }, 300); // Aumentamos el delay a 300ms
+                            }
+                          }}
                           className="text-xl md:text-2xl text-[#DB4C40] hover:opacity-80 transition-opacity"
                         >
                           {item}

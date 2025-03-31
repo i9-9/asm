@@ -4,6 +4,8 @@ import { useState, useEffect } from "react";
 import SplashScreen from "./components/SplashScreen";
 import Navbar from "./components/Navbar";
 import HeroNew from "./components/HeroNew";
+import AboutSection from "./components/AboutSection";
+import ProjectsSection from "./components/ProjectsSection";
 
 export default function Home() {
   const [splashScreenFinished, setSplashScreenFinished] = useState(false);
@@ -33,13 +35,15 @@ export default function Home() {
   };
 
   return (
-    <div className={`min-h-screen transition-colors duration-300 ${theme}`}>
+    <div className={`min-h-screen overflow-y-auto transition-colors duration-300 ${theme} scrollbar-hide`}>
       {!splashScreenFinished ? (
         <SplashScreen onFinish={() => setSplashScreenFinished(true)} />
       ) : (
         <>
           <Navbar theme={theme} />
           <HeroNew theme={theme} toggleTheme={toggleTheme} />
+          <AboutSection theme={theme} />
+          <ProjectsSection theme={theme} />
         </>
       )}
     </div>
