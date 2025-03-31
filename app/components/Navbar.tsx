@@ -83,13 +83,16 @@ export default function Navbar({ theme }: NavbarProps) {
         className={`w-full px-[30px] py-3 fixed top-0 left-0 right-0 ${
           isMenuOpen ? 'z-50' : 'z-40'
         } ${theme === 'dark' ? 'bg-[#202021]' : 'bg-[#F7F7F7]'} transition-colors duration-300`}
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
       >
         <div className="grid grid-cols-12 gap-[20px] items-center">
           {/* Logo */}
           <AnimatePresence>
             {(scrolled || isMenuOpen) && (
               <motion.div 
-                className="col-span-3 md:col-span-2 scale-125 md:scale-100 origin-left"
+                className="col-span-3 md:col-span-2 scale-[1.75] md:scale-100 origin-left"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
@@ -100,11 +103,11 @@ export default function Navbar({ theme }: NavbarProps) {
             )}
           </AnimatePresence>
           
-          {/* Espacio flexible */}
-          <div className={`${(scrolled || isMenuOpen) ? 'col-span-2 md:col-span-7' : 'col-span-5 md:col-span-9'} transition-all duration-300`}></div>
+          {/* Espacio flexible que se ajusta según si el logo está visible o no */}
+          <div className={`${(scrolled || isMenuOpen) ? 'col-span-7' : 'col-span-9'} transition-all duration-300`}></div>
           
-          {/* Contact Information */}
-          <div className="col-span-6 md:col-span-2">
+          {/* Contact Information en el nav - Mantener ubicación y hora */}
+          <div className="col-span-2">
             <div className="flex flex-col justify-center">
               <div className="flex items-center gap-2">
                 <div className="relative w-2 h-2 mt-[2px]">
@@ -119,7 +122,7 @@ export default function Navbar({ theme }: NavbarProps) {
             </div>
           </div>
           
-          {/* Botón de menú */}
+          {/* Botón de menú - Siempre en la última columna */}
           <div className="col-span-1 flex justify-end">
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
