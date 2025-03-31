@@ -1,6 +1,6 @@
 "use client";
 
-import { motion, useScroll, useTransform } from "framer-motion";
+import { motion, useScroll, useTransform, MotionValue } from "framer-motion";
 import { useRef, useState, useEffect } from "react";
 import VerticalMarquee from "./VerticalMarquee";
 
@@ -8,7 +8,7 @@ interface AboutSectionProps {
   theme: string;
 }
 
-const AnimatedCharacter = ({ char, progress }: { char: string; progress: motion.MotionValue<number> }) => (
+const AnimatedCharacter = ({ char, progress }: { char: string; progress: MotionValue<number> }) => (
   <motion.span
     className="inline-block text-[#ff4b4b]"
     style={{ opacity: progress }}
@@ -24,22 +24,21 @@ const AnimatedLine = ({ text }: { text: string }) => {
     offset: ["start center", "end center"]
   });
 
-  const characters = text.split('');
-  const progressValues = characters.map((_, index) => 
-    useTransform(
-      scrollYProgress,
-      [0, 1],
-      [0, 1]
-    )
+  const progressValues = useTransform(
+    scrollYProgress,
+    [0, 1],
+    [0, 1]
   );
+
+  const characters = text.split('');
 
   return (
     <div ref={lineRef} className="overflow-hidden md:whitespace-nowrap">
-      {characters.map((char, index) => (
+      {characters.map((char, i) => (
         <AnimatedCharacter 
-          key={index} 
+          key={i} 
           char={char} 
-          progress={progressValues[index]} 
+          progress={progressValues} 
         />
       ))}
     </div>
