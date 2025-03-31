@@ -35,7 +35,6 @@ body::-webkit-scrollbar {
   font-style: normal;
 }
 
-
 @font-face {
   font-family: 'Helvetica Now Display';
   src: url('/fonts/HelveticaNowDisplay-Bold.woff2') format('woff2');
@@ -53,6 +52,13 @@ body::-webkit-scrollbar {
 @font-face {
   font-family: 'Suisse Intl';
   src: url('/fonts/SuisseIntlMono-Regular.woff2') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Scotch Display';
+  src: url('/fonts/Scotch-Display.woff2') format('woff2');
   font-weight: normal;
   font-style: normal;
 }
@@ -104,5 +110,9 @@ body {
 .scrollbar-hide {
   -ms-overflow-style: none;  /* IE y Edge */
   scrollbar-width: none;  /* Firefox */
+}
+
+html {
+  scroll-behavior: smooth;
 }
 

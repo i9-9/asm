@@ -36,13 +36,24 @@ export default function HeroNew({ theme, toggleTheme }: HeroProps) {
 
           {/* Scroll down - solo en desktop */}
           <div className="hidden md:flex justify-center">
-            <Image 
-              src="/misc/scrolldown.svg" 
-              alt="Scroll Down" 
-              width={22} 
-              height={33}
-              className="animate-bounce"
-            />
+            <button
+              onClick={() => {
+                document.getElementById('about-section')?.scrollIntoView({ 
+                  behavior: 'smooth',
+                  block: 'start'
+                });
+              }}
+              className="cursor-pointer"
+              aria-label="Scroll to about section"
+            >
+              <Image 
+                src="/misc/scrolldown.svg" 
+                alt="Scroll Down" 
+                width={22} 
+                height={33}
+                className="animate-bounce"
+              />
+            </button>
           </div>
 
           {/* Toggle theme */}

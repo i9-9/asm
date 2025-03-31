@@ -8,7 +8,7 @@ interface AboutSectionProps {
   theme: string;
 }
 
-const AnimatedCharacter = ({ char, progress }: { char: string; progress: any }) => (
+const AnimatedCharacter = ({ char, progress }: { char: string; progress: motion.MotionValue<number> }) => (
   <motion.span
     className="inline-block text-[#ff4b4b]"
     style={{ opacity: progress }}
@@ -28,7 +28,7 @@ const AnimatedLine = ({ text }: { text: string }) => {
   const progressValues = characters.map((_, index) => 
     useTransform(
       scrollYProgress,
-      [index / text.length, (index + 1) / text.length],
+      [0, 1],
       [0, 1]
     )
   );
@@ -97,12 +97,14 @@ export default function AboutSection({ theme }: AboutSectionProps) {
   ];
 
   const text3 = [
-    "ASM: Machinery for",
-    "the Digital World."
+    "ASM: Machinery for the Digital World."
   ];
 
   return (
-    <section className={`w-full h-screen ${theme === 'dark' ? 'bg-[#202021]' : 'bg-[#F7F7F7]'} relative`}>
+    <section 
+      id="about-section" 
+      className={`w-full h-screen ${theme === 'dark' ? 'bg-[#202021]' : 'bg-[#F7F7F7]'} relative`}
+    >
       <div className="absolute top-0 left-[30px] w-[calc((100%/12)*2)] h-full hidden md:block">
         <VerticalMarquee />
       </div>

@@ -4,15 +4,17 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import Image from "next/image";
+import ModulosLogo from './ModulosLogo';
 
 // Añadir esta interfaz de props
 interface NavbarProps {
   theme: string;
 }
 
-export default function Navbar({ theme }: Omit<NavbarProps, 'setTheme'>) {
+export default function Navbar({ theme }: NavbarProps) {
   const [currentTime, setCurrentTime] = useState<string>("00:00:00");
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
   
   // Actualizar el reloj en tiempo real - Lógica mejorada y corregida para TypeScript
   useEffect(() => {
@@ -59,6 +61,23 @@ export default function Navbar({ theme }: Omit<NavbarProps, 'setTheme'>) {
     };
   }, [isMenuOpen]);
 
+  useEffect(() => {
+    const handleScroll = () => {
+      // Podemos ajustar este valor (100) según cuando queremos que aparezca el logo
+      const isScrolled = window.scrollY > window.innerHeight;
+      setScrolled(isScrolled);
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  const menuItems = [
+    { href: '#about-section', label: 'About' },
+    { href: '#selected-works', label: 'Selected Works' },
+    { href: '#contact', label: 'Contact' }
+  ];
+
   return (
     <>
       <motion.nav
@@ -71,39 +90,41 @@ export default function Navbar({ theme }: Omit<NavbarProps, 'setTheme'>) {
       >
         <div className="grid grid-cols-12 gap-[20px] items-center">
           {/* Logo */}
-          <div className="col-span-4 md:col-span-2">
-            <Link href="/" className="block">
-              <Image 
-                src="/logo/modulos.svg"
-                alt="Módulos Logo"
-                width={200}
-                height={41}
-                className="w-full"
-                priority
-              />
-            </Link>
-          </div>
+          <AnimatePresence>
+            {(scrolled || isMenuOpen) && (
+              <motion.div 
+                className="hidden md:block col-span-2"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.3 }}
+              >
+                <ModulosLogo theme={theme} />
+              </motion.div>
+            )}
+          </AnimatePresence>
           
-          {/* Espacio vacío */}
-          <div className="col-span-3 md:col-span-5"></div>
+          {/* Espacio flexible que se ajusta según si el logo está visible o no */}
+          <div className={`${(scrolled || isMenuOpen) ? 'col-span-7' : 'col-span-9'} transition-all duration-300`}></div>
           
-          {/* Buenos Aires Information - Ajustado para mobile con mejor espaciado */}
-          <div className="col-span-3">
-            <div className="flex items-start md:items-center gap-2">
-              {/* LED indicator alineado con la primera línea */}
-              <div className="relative w-2 h-2 mt-[5px] md:mt-0">
-                <div className="absolute w-2 h-2 bg-[#DB4C40] rounded-full"></div>
-                <div className="absolute w-2 h-2 bg-[#DB4C40] rounded-full animate-ping opacity-75"></div>
+          {/* Contact Information en el nav - Mantener ubicación y hora */}
+          <div className="col-span-2">
+            <div className="flex flex-col justify-center">
+              <div className="flex items-center gap-2">
+                <div className="relative w-2 h-2 mt-[2px]">
+                  <div className="absolute w-2 h-2 bg-[#DB4C40] rounded-full"></div>
+                  <div className="absolute w-2 h-2 bg-[#DB4C40] rounded-full animate-ping opacity-75"></div>
+                </div>
+                <span className="text-xs md:text-[17px] text-[#DB4C40]">+ Buenos Aires, Argentina</span>
               </div>
-              <div className="text-xs md:text-[17px] text-left text-[#DB4C40] leading-normal md:leading-tight">
-                + Buenos Aires, Argentina<br />
+              <div className="text-xs md:text-[17px] text-[#DB4C40] ml-4">
                 {currentTime}
               </div>
             </div>
           </div>
           
-          {/* Botón de menú */}
-          <div className="col-span-2 flex justify-end">
+          {/* Botón de menú - Siempre en la última columna */}
+          <div className="col-span-1 flex justify-end">
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
               className={`
@@ -143,7 +164,7 @@ export default function Navbar({ theme }: Omit<NavbarProps, 'setTheme'>) {
                 <div>
                   <h2 className="text-[#DB4C40] text-2xl md:text-3xl font-bold mb-6">Menu</h2>
                   <ul className="space-y-4">
-                    {['Home', 'About', 'Services', 'Portfolio', 'Contact'].map((item, i) => (
+                    {menuItems.map((item, i) => (
                       <motion.li 
                         key={i}
                         initial={{ opacity: 0, x: -20 }}
@@ -151,9 +172,9 @@ export default function Navbar({ theme }: Omit<NavbarProps, 'setTheme'>) {
                         transition={{ delay: i * 0.1 }}
                       >
                         <Link 
-                          href="#"
+                          href={item.href}
                           onClick={(e) => {
-                            if (item === 'Portfolio') {
+                            if (item.href === '#selected-works') {
                               e.preventDefault();
                               setIsMenuOpen(false); // Primero cerramos el menú
                               document.body.style.overflow = 'unset'; // Aseguramos que el scroll esté habilitado
@@ -170,14 +191,14 @@ export default function Navbar({ theme }: Omit<NavbarProps, 'setTheme'>) {
                           }}
                           className="text-xl md:text-2xl text-[#DB4C40] hover:opacity-80 transition-opacity"
                         >
-                          {item}
+                          {item.label}
                         </Link>
                       </motion.li>
                     ))}
                   </ul>
                 </div>
 
-                {/* Contacto */}
+                {/* Contact section in mega menu */}
                 <div>
                   <h2 className="text-[#DB4C40] text-2xl md:text-3xl font-bold mb-6">Contact</h2>
                   <ul className="space-y-3">
@@ -185,16 +206,26 @@ export default function Navbar({ theme }: Omit<NavbarProps, 'setTheme'>) {
                       className="text-lg md:text-xl text-[#DB4C40]"
                       initial={{ opacity: 0, x: -20 }}
                       animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: 0.1 }}
                     >
-                      info@modulos.com
+                      <Link href="mailto:INFO@ASM.STUDIO" className="hover:opacity-80 transition-opacity">
+                        INFO@ASM.STUDIO
+                      </Link>
                     </motion.li>
                     <motion.li 
                       className="text-lg md:text-xl text-[#DB4C40]"
                       initial={{ opacity: 0, x: -20 }}
                       animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: 0.1 }}
+                      transition={{ delay: 0.2 }}
                     >
-                      +54 11 1234-5678
+                      <Link 
+                        href="https://wa.me/5491140753025" 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="hover:opacity-80 transition-opacity"
+                      >
+                        +54 911 4075 3025
+                      </Link>
                     </motion.li>
                   </ul>
                 </div>

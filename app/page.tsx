@@ -6,6 +6,7 @@ import Navbar from "./components/Navbar";
 import HeroNew from "./components/HeroNew";
 import AboutSection from "./components/AboutSection";
 import ProjectsSection from "./components/ProjectsSection";
+import ContactSection from './components/ContactSection';
 
 export default function Home() {
   const [splashScreenFinished, setSplashScreenFinished] = useState(false);
@@ -44,6 +45,7 @@ export default function Home() {
           <HeroNew theme={theme} toggleTheme={toggleTheme} />
           <AboutSection theme={theme} />
           <ProjectsSection theme={theme} />
+          <ContactSection theme={theme} />
         </>
       )}
     </div>
