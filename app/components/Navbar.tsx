@@ -59,10 +59,6 @@ export default function Navbar({ theme }: Omit<NavbarProps, 'setTheme'>) {
     };
   }, [isMenuOpen]);
 
-  const toggleMenu = () => {
-    setIsMenuOpen(!isMenuOpen);
-  };
-
   return (
     <>
       <motion.nav
@@ -106,36 +102,26 @@ export default function Navbar({ theme }: Omit<NavbarProps, 'setTheme'>) {
             </div>
           </div>
           
-          {/* Botón de menú - Solo hamburguesa, no X */}
+          {/* Botón de menú */}
           <div className="col-span-2 flex justify-end">
             <button
-              onClick={toggleMenu}
-              className="relative w-[30px] h-[20px] focus:outline-none"
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+              className={`
+                px-4 py-2 
+                ${theme === 'dark' 
+                  ? 'bg-[#2E2E2E] text-[#DB4C40]' 
+                  : 'bg-[#DB4C40] text-[#F7F7F7]'
+                }
+                rounded-[4px] 
+                text-base 
+                font-normal 
+                transition-colors
+                hover:bg-opacity-90
+                focus:outline-none
+              `}
               aria-label={isMenuOpen ? "Close menu" : "Open menu"}
             >
-              <motion.span
-                className="absolute top-0 block h-[2px] w-full rounded-sm bg-[#DB4C40]"
-                animate={{ 
-                  rotate: isMenuOpen ? 45 : 0,
-                  y: isMenuOpen ? 9 : 0
-                }}
-                transition={{ duration: 0.2 }}
-              />
-              <motion.span
-                className="absolute top-[9px] block h-[2px] w-full rounded-sm bg-[#FF4136]"
-                animate={{ 
-                  opacity: isMenuOpen ? 0 : 1
-                }}
-                transition={{ duration: 0.2 }}
-              />
-              <motion.span
-                className="absolute bottom-0 block h-[2px] w-full rounded-sm bg-[#DB4C40]"
-                animate={{ 
-                  rotate: isMenuOpen ? -45 : 0,
-                  y: isMenuOpen ? -9 : 0
-                }}
-                transition={{ duration: 0.2 }}
-              />
+              {isMenuOpen ? "CLOSE" : "MENU"}
             </button>
           </div>
         </div>

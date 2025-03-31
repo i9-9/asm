@@ -12,13 +12,13 @@ interface HeroProps {
 export default function HeroNew({ theme, toggleTheme }: HeroProps) {
   return (
     <motion.section 
-      className="flex flex-col items-center justify-center fixed inset-0 w-full h-screen"
+      className="flex flex-col items-center justify-start pt-[320px] fixed inset-0 w-full h-screen"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
     >
       {/* Logo animado */}
-      <div className="mb-16 scale-100 md:scale-[1.35] -mt-16 w-[75vw] md:w-[65vw] lg:w-[55vw]">
+      <div className="mb-16 scale-100 md:scale-[1.35] w-[75vw] md:w-[65vw] lg:w-[55vw]">
         <ModulosLogo theme={theme} />
       </div>
       
@@ -28,7 +28,7 @@ export default function HeroNew({ theme, toggleTheme }: HeroProps) {
         <div className="grid grid-cols-2 md:grid-cols-3 items-center gap-4">
           {/* Título */}
           <h1 className="text-base md:text-xl uppercase text-[#DB4C40]">
-            THE <span className="font-bold">DESIGN & DEVELOPMENT</span> STUDIO
+            <span className="font-bold">DESIGN & DEVELOPMENT</span> STUDIO
           </h1>
 
           {/* Scroll down - solo en desktop */}

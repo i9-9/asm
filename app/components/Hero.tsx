@@ -35,7 +35,7 @@ export default function Hero({ theme, toggleTheme }: HeroProps) {
         animate={{ opacity: 1 }}
         transition={{ delay: 0.5, duration: 0.8 }}
       >
-        THE <span className="font-bold">DESIGN & DEVELOPMENT</span> STUDIO
+      <span className="font-bold">DESIGN & DEVELOPMENT</span> STUDIO
       </motion.div>
       
       {/* Theme toggle button */}

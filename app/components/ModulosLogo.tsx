@@ -31,8 +31,8 @@ export default function ModulosLogo({ theme }: ModulosLogoProps) {
   const columns = 20;
   const rows = 8;
   
-  const moduleColor = theme === 'light' ? "#C43931" : "#DB4C40";
-  const highlightColor = "#FFFFFF";
+  const moduleColor = theme === 'light' ? "#DB4C40" : "#DB4C40";
+  const highlightColor = theme === 'light' ? "#202021" : "#FFFFFF";
   
   const clearAllTimeouts = useCallback(() => {
     timeoutsRef.current.forEach(timeoutId => clearTimeout(timeoutId));
