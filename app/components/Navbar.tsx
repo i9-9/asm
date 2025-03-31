@@ -81,7 +81,7 @@ export default function Navbar({ theme }: NavbarProps) {
   return (
     <>
       <motion.nav
-        className={`w-full px-[30px] py-4 md:py-6 fixed top-0 left-0 right-0 ${
+        className={`w-full px-[30px] py-3 fixed top-0 left-0 right-0 ${
           isMenuOpen ? 'z-50' : 'z-40'
         } ${theme === 'dark' ? 'bg-[#202021]' : 'bg-[#F7F7F7]'} transition-colors duration-300`}
         initial={{ opacity: 0, y: -20 }}

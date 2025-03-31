@@ -142,8 +142,9 @@ export default function ProjectsSection({ theme }: ProjectsSectionProps) {
                       exit="exit"
                     >
                       {/* Descripción expandida */}
-                      <div className="md:col-span-2">
-                        <p className="text-[#ff4b4b] text-sm leading-relaxed mb-4">
+                      <div className="md:col-span-2 order-2 md:order-1">
+                        <h4 className="text-[#ff4b4b] text-[19px] uppercase mb-4">Description</h4>
+                        <p className="text-[#ff4b4b] text-[16px] leading-[1.4] mb-8">
                           {project.description}
                         </p>
                         <button className="px-4 py-2 border border-[#ff4b4b] text-[#ff4b4b] hover:bg-[#ff4b4b] hover:text-[#202021] transition-colors rounded-[8px]">
@@ -151,8 +152,8 @@ export default function ProjectsSection({ theme }: ProjectsSectionProps) {
                         </button>
                       </div>
 
-                      {/* Imagen expandida */}
-                      <div className="md:col-span-3">
+                      {/* Imagen expandida - Ahora segundo */}
+                      <div className="md:col-span-3 order-1 md:order-2">
                         <div className="aspect-square bg-[#2E2E2E] relative overflow-hidden rounded-[4px]">
                           <Image
                             src="/img/kostume_tiny.png"
