@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
 
@@ -18,25 +18,6 @@ interface ProjectsSectionProps {
 
 export default function ProjectsSection({ theme }: ProjectsSectionProps) {
   const [hoveredProject, setHoveredProject] = useState<string | null>(null);
-  const [isMobile, setIsMobile] = useState(false);
-
-  // Detectar si es mobile
-  useEffect(() => {
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth < 768);
-    };
-    
-    checkMobile();
-    window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
-  }, []);
-
-  const handleProjectInteraction = (projectId: string) => {
-    if (isMobile) {
-      // En mobile, toggle el proyecto al hacer tap
-      setHoveredProject(hoveredProject === projectId ? null : projectId);
-    }
-  };
 
   const projects: Project[] = [
     {
@@ -127,9 +108,8 @@ export default function ProjectsSection({ theme }: ProjectsSectionProps) {
             <motion.div
               key={project.id}
               className="relative"
-              onMouseEnter={() => !isMobile && setHoveredProject(project.id)}
-              onMouseLeave={() => !isMobile && setHoveredProject(null)}
-              onClick={() => handleProjectInteraction(project.id)}
+              onMouseEnter={() => setHoveredProject(project.id)}
+              onMouseLeave={() => setHoveredProject(null)}
             >
               <div className="grid grid-cols-4 md:grid-cols-12 gap-[20px] py-6">
                 {/* Número del proyecto */}

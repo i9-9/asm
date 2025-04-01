@@ -30,7 +30,7 @@ export default function HeroNew({ theme, toggleTheme }: HeroProps) {
         {/* Grid para mejor control del espacio */}
         <div className="grid grid-cols-2 md:grid-cols-3 items-center gap-4">
           {/* Título */}
-          <h1 className="text-base md:text-xl uppercase text-[#DB4C40] whitespace-nowrap">
+          <h1 className="text-base md:text-xl uppercase text-[#DB4C40]">
             <span className="font-bold">DESIGN & DEVELOPMENT</span> STUDIO
           </h1>
 

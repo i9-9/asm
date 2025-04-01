@@ -88,25 +88,23 @@ export default function Navbar({ theme }: NavbarProps) {
         transition={{ duration: 0.5 }}
       >
         <div className="grid grid-cols-12 gap-[20px] items-center">
-          {/* Espacio reservado para el logo */}
-          <div className="col-span-3 md:col-span-2 relative">
-            <AnimatePresence>
-              {(scrolled || isMenuOpen) && (
-                <motion.div 
-                  className="absolute top-0 left-0 w-full scale-[1.75] md:scale-100 origin-left"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  transition={{ duration: 0.3 }}
-                >
-                  <ModulosLogo theme={theme} />
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
+          {/* Logo */}
+          <AnimatePresence>
+            {(scrolled || isMenuOpen) && (
+              <motion.div 
+                className="col-span-3 md:col-span-2 scale-[1.75] md:scale-100 origin-left"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.3 }}
+              >
+                <ModulosLogo theme={theme} />
+              </motion.div>
+            )}
+          </AnimatePresence>
           
-          {/* Espacio flexible - ahora siempre el mismo tamaño */}
-          <div className="col-span-2 md:col-span-7 transition-all duration-300"></div>
+          {/* Espacio flexible */}
+          <div className={`${(scrolled || isMenuOpen) ? 'col-span-2 md:col-span-7' : 'col-span-5 md:col-span-9'} transition-all duration-300`}></div>
           
           {/* Contact Information */}
           <div className="col-span-6 md:col-span-2">
