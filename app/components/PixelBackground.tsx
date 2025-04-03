@@ -13,10 +13,13 @@ interface Pixel {
   size: number;
   pattern: string;
   delay: number;
+  colorMode: string;
+  colorDelay: number;
 }
 
 const PixelBackground = ({ theme }: PixelProps) => {
   const [pixels, setPixels] = useState<Pixel[]>([]);
+  const [currentPattern, setCurrentPattern] = useState<string>("");
   
   const colors = {
     red: "#ff4b4b",
@@ -25,7 +28,31 @@ const PixelBackground = ({ theme }: PixelProps) => {
   };
   
   useEffect(() => {
-    if (pixels.length > 0) return;
+    const patterns = [
+      "wave",
+      "alternate",
+      "pulse",
+      "radial",
+    ];
+    
+    // Iniciar con un patrón aleatorio
+    if (!currentPattern) {
+      setCurrentPattern(patterns[Math.floor(Math.random() * patterns.length)]);
+    }
+    
+    // Cambiar el patrón cada 20 segundos
+    const patternInterval = setInterval(() => {
+      const newPattern = patterns[Math.floor(Math.random() * patterns.length)];
+      setCurrentPattern(newPattern);
+      // Regeneramos los círculos para el nuevo patrón
+      setPixels([]);
+    }, 20000); // 20 segundos
+    
+    return () => clearInterval(patternInterval);
+  }, []);
+  
+  useEffect(() => {
+    if (pixels.length > 0 || !currentPattern) return;
     
     const generateCircles = () => {
       const windowHeight = window.innerHeight;
@@ -53,14 +80,8 @@ const PixelBackground = ({ theme }: PixelProps) => {
       
       const newPixels: Pixel[] = [];
       
-      const patterns = [
-        "wave",
-        "alternate",
-        "pulse",
-        "radial",
-      ];
-      
-      const chosenPattern = patterns[Math.floor(Math.random() * patterns.length)];
+      // Modos de color para los círculos individuales
+      const colorModes = ["redWhite", "blackWhite", "redBlack"];
       
       for (let y = 0; y < rows; y++) {
         for (let x = 0; x < columns; x++) {
@@ -73,33 +94,42 @@ const PixelBackground = ({ theme }: PixelProps) => {
           const centerDistY = y - (rows / 2);
           const distFromCenter = Math.sqrt(centerDistX * centerDistX + centerDistY * centerDistY);
           
+          // Delay para el patrón principal
           let delay = 0;
           
-          switch (chosenPattern) {
+          switch (currentPattern) {
             case "wave":
-              delay = (x * 0.05) + (y * 0.05); // Delays más compactos
+              delay = (x * 0.05) + (y * 0.05);
               break;
             case "alternate":
-              delay = (x + y) % 2 === 0 ? 0 : 0.3; // Delays más cortos
+              delay = (x + y) % 2 === 0 ? 0 : 0.3;
               break;
             case "pulse":
-              delay = distFromCenter * 0.1; // Delays más cortos
+              delay = distFromCenter * 0.1;
               break;
             case "radial":
               const cornerDist = Math.sqrt(x * x + y * y);
-              delay = cornerDist * 0.1; // Delays más cortos
+              delay = cornerDist * 0.1;
               break;
           }
           
-          // Para no sobrecargar el rendimiento, aplicamos una probabilidad
-          // de incluir cada círculo (esto reduce la densidad pero mantiene el patrón)
-          if (Math.random() > 0.2) { // 80% de probabilidad de incluir cada círculo
+          // Para no sobrecargar el rendimiento
+          if (Math.random() > 0.2) {
+            // Asignar un modo de color aleatorio a cada círculo
+            const colorMode = colorModes[Math.floor(Math.random() * colorModes.length)];
+            
+            // Delay independiente para el cambio de color
+            // Más largo para que sea independiente del patrón principal
+            const colorDelay = Math.random() * 10; // Entre 0 y 10 segundos
+            
             newPixels.push({
               left: centerX - (circleSize / 2),
               top: centerY - (circleSize / 2),
               size: circleSize,
-              pattern: chosenPattern,
+              pattern: currentPattern,
               delay: delay,
+              colorMode: colorMode,
+              colorDelay: colorDelay
             });
           }
         }
@@ -113,45 +143,68 @@ const PixelBackground = ({ theme }: PixelProps) => {
     const handleResize = () => setPixels([]);
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
-  }, [theme, colors]);
+  }, [theme, colors, currentPattern]);
   
   return (
     <div className="absolute inset-0 w-full h-full" style={{ zIndex: 0 }}>
       {pixels.map((pixel, index) => {
-        // Animaciones simplificadas con solo colores plenos
-        let animation;
+        // Animación del patrón principal
+        let patternAnimation;
         
         switch (pixel.pattern) {
           case "wave":
-            animation = {
-              backgroundColor: [colors.black, colors.red, colors.black],
+            patternAnimation = {
+              scale: [1, 1.1, 1],
             };
             break;
           case "alternate":
-            animation = {
-              backgroundColor: [colors.black, colors.white, colors.black],
+            patternAnimation = {
+              scale: [1, 1.05, 1],
             };
             break;
           case "pulse":
-            animation = {
-              backgroundColor: [colors.black, colors.red, colors.black],
+            patternAnimation = {
               scale: [1, 1.2, 1],
             };
             break;
           case "radial":
-            animation = {
+            patternAnimation = {
+              scale: [1, 1.15, 1],
+            };
+            break;
+          default:
+            patternAnimation = {
+              scale: [1, 1.1, 1],
+            };
+        }
+        
+        // Colores independientes por círculo
+        let colorAnimation;
+        switch (pixel.colorMode) {
+          case "redWhite":
+            colorAnimation = {
+              backgroundColor: [colors.red, colors.white, colors.red],
+            };
+            break;
+          case "blackWhite":
+            colorAnimation = {
+              backgroundColor: [colors.black, colors.white, colors.black],
+            };
+            break;
+          case "redBlack":
+            colorAnimation = {
               backgroundColor: [colors.red, colors.black, colors.red],
             };
             break;
           default:
-            animation = {
+            colorAnimation = {
               backgroundColor: [colors.black, colors.red, colors.black],
             };
         }
         
         return (
           <motion.div
-            key={index}
+            key={`${pixel.pattern}-${index}`}
             style={{
               position: 'absolute',
               left: `${pixel.left}px`,
@@ -164,12 +217,16 @@ const PixelBackground = ({ theme }: PixelProps) => {
               display: 'block',
               overflow: 'hidden'
             }}
-            animate={animation}
+            // Combinamos ambas animaciones
+            animate={{
+              ...patternAnimation,
+              ...colorAnimation
+            }}
             transition={{
               repeat: Infinity,
               repeatType: "mirror",
               duration: 1.5,
-              delay: pixel.delay,
+              delay: pixel.pattern === "alternate" ? pixel.delay : pixel.colorDelay,
               ease: "easeInOut",
             }}
           />
