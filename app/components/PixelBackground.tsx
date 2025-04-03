@@ -14,6 +14,7 @@ interface Pixel {
   pattern: string;
   delay: number;
   colorDelay: number;
+  distFromCenter: number;
 }
 
 const PixelBackground = ({ theme }: PixelProps) => {
@@ -27,10 +28,10 @@ const PixelBackground = ({ theme }: PixelProps) => {
   
   useEffect(() => {
     const patterns = [
+      "radar",
       "wave",
-      "alternate",
-      "pulse",
-      "radial",
+      "ripple",
+      "sweep",
     ];
     
     // Iniciar con un patrón aleatorio
@@ -75,35 +76,45 @@ const PixelBackground = ({ theme }: PixelProps) => {
       const horizontalOffset = (windowWidth - totalPatternWidth) / 2;
       const verticalOffset = (windowHeight - totalPatternHeight) / 2;
       
+      // Calculamos el centro de la pantalla para efectos radiales
+      const centerX = windowWidth / 2;
+      const centerY = windowHeight / 2;
+      
       const newPixels: Pixel[] = [];
       
       for (let y = 0; y < rows; y++) {
         for (let x = 0; x < columns; x++) {
           // Posición exacta de cada círculo
-          const centerX = horizontalOffset + (x * spacing) + (spacing / 2);
-          const centerY = verticalOffset + (y * spacing) + (spacing / 2);
+          const pixelCenterX = horizontalOffset + (x * spacing) + (spacing / 2);
+          const pixelCenterY = verticalOffset + (y * spacing) + (spacing / 2);
           
-          // Calculamos distancias para los patrones
-          const centerDistX = x - (columns / 2);
-          const centerDistY = y - (rows / 2);
-          const distFromCenter = Math.sqrt(centerDistX * centerDistX + centerDistY * centerDistY);
+          // Calculamos distancias para los patrones radiales
+          const dx = pixelCenterX - centerX;
+          const dy = pixelCenterY - centerY;
+          const distFromCenter = Math.sqrt(dx * dx + dy * dy);
+          
+          // Calculamos ángulo desde el centro para efectos barrido
+          const angle = Math.atan2(dy, dx) * (180 / Math.PI);
           
           // Delay para el patrón principal
           let delay = 0;
           
           switch (currentPattern) {
+            case "radar":
+              // Barrido circular, como un radar
+              delay = ((angle + 180) / 360) * 3; // Barrido completo en 3 segundos
+              break;
             case "wave":
-              delay = (x * 0.05) + (y * 0.05);
+              // Onda desde el centro
+              delay = distFromCenter * 0.001; // Retardo basado en distancia
               break;
-            case "alternate":
-              delay = (x + y) % 2 === 0 ? 0 : 0.3;
+            case "ripple":
+              // Ondas concéntricas
+              delay = (distFromCenter % 200) * 0.005; // Múltiples anillos
               break;
-            case "pulse":
-              delay = distFromCenter * 0.1;
-              break;
-            case "radial":
-              const cornerDist = Math.sqrt(x * x + y * y);
-              delay = cornerDist * 0.1;
+            case "sweep":
+              // Barrido horizontal
+              delay = (pixelCenterX / windowWidth) * 2; // Barrido en 2 segundos
               break;
           }
           
@@ -113,12 +124,13 @@ const PixelBackground = ({ theme }: PixelProps) => {
             const colorDelay = Math.random() * 10; // Entre 0 y 10 segundos
             
             newPixels.push({
-              left: centerX - (circleSize / 2),
-              top: centerY - (circleSize / 2),
+              left: pixelCenterX - (circleSize / 2),
+              top: pixelCenterY - (circleSize / 2),
               size: circleSize,
               pattern: currentPattern,
               delay: delay,
-              colorDelay: colorDelay
+              colorDelay: colorDelay,
+              distFromCenter: distFromCenter
             });
           }
         }
@@ -137,45 +149,44 @@ const PixelBackground = ({ theme }: PixelProps) => {
   return (
     <div className="absolute inset-0 w-full h-full" style={{ zIndex: 0 }}>
       {pixels.map((pixel, index) => {
-        // Animación del patrón principal según el tipo
+        // Animación del patrón principal - enfocada en efectos tipo radar
         let patternAnimation;
         
         switch (pixel.pattern) {
-          case "wave":
+          case "radar":
+            // Efecto de barrido con escala
             patternAnimation = {
-              y: [0, -10, 0, 10, 0],
-              x: [0, 5, 0, -5, 0],
-              scale: [1, 1.1, 1, 1.1, 1],
+              scale: [1, 1.3, 1],
+              opacity: [1, 0.7, 1],
             };
             break;
-          case "alternate":
+          case "wave":
+            // Onda expandiéndose
             patternAnimation = {
               scale: [1, 1.2, 1],
-              rotate: [0, 180, 0],
             };
             break;
-          case "pulse":
-            patternAnimation = {
-              scale: [1, 2, 1],
-              opacity: [1, 0.8, 1],
-            };
-            break;
-          case "radial":
+          case "ripple":
+            // Pulsaciones concéntricas
             patternAnimation = {
               scale: [1, 1.5, 1],
-              x: [0, centerDistance(pixel.left, window.innerWidth/2, 10), 0],
-              y: [0, centerDistance(pixel.top, window.innerHeight/2, 10), 0],
+            };
+            break;
+          case "sweep":
+            // Barrido horizontal
+            patternAnimation = {
+              scale: [1, 1.3, 1],
             };
             break;
           default:
             patternAnimation = {
-              scale: [1, 1.1, 1],
+              scale: [1, 1.2, 1],
             };
         }
         
         // Alternando entre rojo y negro para todos los círculos
         const colorAnimation = {
-          backgroundColor: [colors.red, colors.black, colors.red],
+          backgroundColor: [colors.black, colors.red, colors.black],
         };
         
         return (
@@ -200,10 +211,9 @@ const PixelBackground = ({ theme }: PixelProps) => {
             transition={{
               repeat: Infinity,
               repeatType: "mirror",
-              duration: pixel.pattern === "pulse" ? 2.5 : 1.5,
+              duration: 1.5,
               delay: pixel.delay,
-              ease: pixel.pattern === "wave" ? "easeInOut" : "easeInOut",
-              times: pixel.pattern === "wave" ? [0, 0.25, 0.5, 0.75, 1] : undefined,
+              ease: "easeInOut",
             }}
           />
         );
@@ -211,11 +221,5 @@ const PixelBackground = ({ theme }: PixelProps) => {
     </div>
   );
 };
-
-// Función auxiliar para calcular la distancia desde el centro
-function centerDistance(position: number, center: number, intensity: number): number {
-  const distance = position - center;
-  return distance > 0 ? intensity : -intensity;
-}
 
 export default PixelBackground;
