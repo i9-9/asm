@@ -13,7 +13,6 @@ interface Pixel {
   size: number;
   pattern: string;
   delay: number;
-  colorMode: string;
   colorDelay: number;
 }
 
@@ -23,8 +22,7 @@ const PixelBackground = ({ theme }: PixelProps) => {
   
   const colors = {
     red: "#ff4b4b",
-    white: "#FFFFFF",
-    black: theme === 'dark' ? "#202021" : "#202021"
+    black: theme === 'dark' ? "#202021" : "#202021",
   };
   
   useEffect(() => {
@@ -49,7 +47,7 @@ const PixelBackground = ({ theme }: PixelProps) => {
     }, 20000); // 20 segundos
     
     return () => clearInterval(patternInterval);
-  }, []);
+  }, [currentPattern]);
   
   useEffect(() => {
     if (pixels.length > 0 || !currentPattern) return;
@@ -58,15 +56,14 @@ const PixelBackground = ({ theme }: PixelProps) => {
       const windowHeight = window.innerHeight;
       const windowWidth = window.innerWidth;
       
-      // Drásticamente reducimos el tamaño y espaciado para muchos más círculos
-      const circleSize = 12; // Círculos aún más pequeños
-      const spacing = 25;   // Espaciado mucho menor
+      const circleSize = 12;
+      const spacing = 25;
       
       // Calculamos el área disponible
       const availableWidth = windowWidth;
       const availableHeight = windowHeight;
       
-      // Calculamos cuántas columnas y filas caben (ahora muchas más)
+      // Calculamos cuántas columnas y filas caben
       const columns = Math.floor(availableWidth / spacing);
       const rows = Math.floor(availableHeight / spacing);
       
@@ -79,9 +76,6 @@ const PixelBackground = ({ theme }: PixelProps) => {
       const verticalOffset = (windowHeight - totalPatternHeight) / 2;
       
       const newPixels: Pixel[] = [];
-      
-      // Modos de color para los círculos individuales
-      const colorModes = ["redWhite", "blackWhite", "redBlack"];
       
       for (let y = 0; y < rows; y++) {
         for (let x = 0; x < columns; x++) {
@@ -115,11 +109,7 @@ const PixelBackground = ({ theme }: PixelProps) => {
           
           // Para no sobrecargar el rendimiento
           if (Math.random() > 0.2) {
-            // Asignar un modo de color aleatorio a cada círculo
-            const colorMode = colorModes[Math.floor(Math.random() * colorModes.length)];
-            
             // Delay independiente para el cambio de color
-            // Más largo para que sea independiente del patrón principal
             const colorDelay = Math.random() * 10; // Entre 0 y 10 segundos
             
             newPixels.push({
@@ -128,7 +118,6 @@ const PixelBackground = ({ theme }: PixelProps) => {
               size: circleSize,
               pattern: currentPattern,
               delay: delay,
-              colorMode: colorMode,
               colorDelay: colorDelay
             });
           }
@@ -143,33 +132,39 @@ const PixelBackground = ({ theme }: PixelProps) => {
     const handleResize = () => setPixels([]);
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
-  }, [theme, colors, currentPattern]);
+  }, [currentPattern, theme]);
   
   return (
     <div className="absolute inset-0 w-full h-full" style={{ zIndex: 0 }}>
       {pixels.map((pixel, index) => {
-        // Animación del patrón principal
+        // Animación del patrón principal según el tipo
         let patternAnimation;
         
         switch (pixel.pattern) {
           case "wave":
             patternAnimation = {
-              scale: [1, 1.1, 1],
+              y: [0, -10, 0, 10, 0],
+              x: [0, 5, 0, -5, 0],
+              scale: [1, 1.1, 1, 1.1, 1],
             };
             break;
           case "alternate":
             patternAnimation = {
-              scale: [1, 1.05, 1],
+              scale: [1, 1.2, 1],
+              rotate: [0, 180, 0],
             };
             break;
           case "pulse":
             patternAnimation = {
-              scale: [1, 1.2, 1],
+              scale: [1, 2, 1],
+              opacity: [1, 0.8, 1],
             };
             break;
           case "radial":
             patternAnimation = {
-              scale: [1, 1.15, 1],
+              scale: [1, 1.5, 1],
+              x: [0, centerDistance(pixel.left, window.innerWidth/2, 10), 0],
+              y: [0, centerDistance(pixel.top, window.innerHeight/2, 10), 0],
             };
             break;
           default:
@@ -178,29 +173,10 @@ const PixelBackground = ({ theme }: PixelProps) => {
             };
         }
         
-        // Colores independientes por círculo
-        let colorAnimation;
-        switch (pixel.colorMode) {
-          case "redWhite":
-            colorAnimation = {
-              backgroundColor: [colors.red, colors.white, colors.red],
-            };
-            break;
-          case "blackWhite":
-            colorAnimation = {
-              backgroundColor: [colors.black, colors.white, colors.black],
-            };
-            break;
-          case "redBlack":
-            colorAnimation = {
-              backgroundColor: [colors.red, colors.black, colors.red],
-            };
-            break;
-          default:
-            colorAnimation = {
-              backgroundColor: [colors.black, colors.red, colors.black],
-            };
-        }
+        // Alternando entre rojo y negro para todos los círculos
+        const colorAnimation = {
+          backgroundColor: [colors.red, colors.black, colors.red],
+        };
         
         return (
           <motion.div
@@ -217,7 +193,6 @@ const PixelBackground = ({ theme }: PixelProps) => {
               display: 'block',
               overflow: 'hidden'
             }}
-            // Combinamos ambas animaciones
             animate={{
               ...patternAnimation,
               ...colorAnimation
@@ -225,9 +200,10 @@ const PixelBackground = ({ theme }: PixelProps) => {
             transition={{
               repeat: Infinity,
               repeatType: "mirror",
-              duration: 1.5,
-              delay: pixel.pattern === "alternate" ? pixel.delay : pixel.colorDelay,
-              ease: "easeInOut",
+              duration: pixel.pattern === "pulse" ? 2.5 : 1.5,
+              delay: pixel.delay,
+              ease: pixel.pattern === "wave" ? "easeInOut" : "easeInOut",
+              times: pixel.pattern === "wave" ? [0, 0.25, 0.5, 0.75, 1] : undefined,
             }}
           />
         );
@@ -235,5 +211,11 @@ const PixelBackground = ({ theme }: PixelProps) => {
     </div>
   );
 };
+
+// Función auxiliar para calcular la distancia desde el centro
+function centerDistance(position: number, center: number, intensity: number): number {
+  const distance = position - center;
+  return distance > 0 ? intensity : -intensity;
+}
 
 export default PixelBackground;
