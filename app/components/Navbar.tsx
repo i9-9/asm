@@ -125,7 +125,7 @@ export default function Navbar({ theme }: NavbarProps) {
                   exit={{ opacity: 0 }}
                   transition={{ duration: 0.3 }}
                 >
-                  <ModulosLogo theme={theme} isOverPixelBackground={isOverPixelBackground} />
+                  <ModulosLogo theme={theme} />
                 </motion.div>
               )}
             </AnimatePresence>
