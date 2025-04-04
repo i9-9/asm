@@ -132,7 +132,7 @@ const PixelBackground = ({ theme }: PixelProps) => {
     const handleResize = () => setPixels([]);
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
-  }, [currentPattern, theme]);
+  }, [currentPattern, theme, pixels.length]);
   
   return (
     <div className="absolute inset-0 w-full h-full" style={{ zIndex: 0 }}>

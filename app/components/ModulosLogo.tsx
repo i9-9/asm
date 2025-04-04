@@ -7,6 +7,7 @@ import { logoPathsData } from "./logoPathsData";
 
 interface ModulosLogoProps {
   theme: string;
+  isOverPixelBackground?: boolean;
 }
 
 // Definir el tipo para los patrones de onda
@@ -20,7 +21,7 @@ interface WavePatterns {
   sinusoidalWave: WavePattern;
 }
 
-export default function ModulosLogo({ theme }: ModulosLogoProps) {
+export default function ModulosLogo({ theme, isOverPixelBackground = false }: ModulosLogoProps) {
   const [hoveredModule, setHoveredModule] = useState<string | null>(null);
   const [activeModules, setActiveModules] = useState<string[]>([]);
   
@@ -31,16 +32,24 @@ export default function ModulosLogo({ theme }: ModulosLogoProps) {
   const columns = 20;
   const rows = 8;
   
-  const moduleColor = theme === 'light' ? "#DB4C40" : "#DB4C40";
-  const highlightColor = theme === 'light' ? "#202021" : "#FFFFFF";
+  // Colores para diferentes estados y condiciones
+  const colors = {
+    default: theme === 'light' ? "#DB4C40" : "#DB4C40",    // Color normal (rojo)
+    white: "#F0F0F0",                                      // Blanco puro
+    highlight: theme === 'light' ? "#202021" : "#F0F0F0",  // Color de resaltado según tema
+  };
+  
+  // Determinar los colores a usar basado en la posición
+  const moduleColor = isOverPixelBackground ? colors.white : colors.default;
+  const highlightColor = isOverPixelBackground ? colors.default : colors.highlight;
   
   const clearAllTimeouts = useCallback(() => {
     timeoutsRef.current.forEach(timeoutId => clearTimeout(timeoutId));
     timeoutsRef.current = [];
   }, []);
 
-  // Crear una función auxiliar para ejecutar el siguiente patrón
-  const executePattern = useCallback((patterns: WavePatterns, keys: Array<keyof WavePatterns>) => {
+  // Definimos primero executePattern
+  const executePattern = useCallback((patternObj: WavePatterns, keys: Array<keyof WavePatterns>) => {
     if (!isMounted.current) return;
     
     clearAllTimeouts();
@@ -48,43 +57,42 @@ export default function ModulosLogo({ theme }: ModulosLogoProps) {
     const nextIndex = Math.floor(Math.random() * keys.length);
     patternIndexRef.current = nextIndex;
     
-    const patternFunction = patterns[keys[patternIndexRef.current]];
+    const patternFunction = patternObj[keys[patternIndexRef.current]];
     patternFunction();
   }, [clearAllTimeouts]);
 
-  // Definir wavePatterns con tipo explícito
-  const { patterns, patternKeys } = useMemo<{ 
-    patterns: WavePatterns; 
-    patternKeys: Array<keyof WavePatterns>;
-  }>(() => {
-    const patterns: WavePatterns = {
+  // Constante auxiliar para el setTimeout en los patrones
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const setupRepeatTimeout = useCallback((delay: number = 1500) => {
+    const repeatTimeout = window.setTimeout(() => {
+      if (isMounted.current) {
+        // En lugar de llamar a runNextPattern directamente, programamos una nueva llamada a executePattern
+        const keys = Object.keys(patterns) as Array<keyof WavePatterns>;
+        executePattern(patterns, keys);
+      }
+    }, delay);
+    
+    timeoutsRef.current.push(repeatTimeout);
+  }, [executePattern]);
+
+  // Luego definimos patterns usando setupRepeatTimeout en lugar de runNextPattern
+  const patterns: WavePatterns = useMemo(() => {
+    return {
       horizontalWave: () => {
-        // Ya no declaramos totalModules aquí para evitar el warning
         const modulesPerColumn = Math.ceil(logoPathsData.length / columns);
         
-        // Animar cada columna con un retraso incremental
         const animateWave = (colIndex: number) => {
           if (!isMounted.current || colIndex >= columns) {
-            // Programar la próxima animación después de completar la onda
-            const repeatTimeout = window.setTimeout(() => {
-              if (isMounted.current) {
-                runNextPattern();
-              }
-            }, 1500);
-            
-            timeoutsRef.current.push(repeatTimeout);
+            setupRepeatTimeout(1500);
             return;
           }
           
-          // Obtener módulos de esta columna
           const startIdx = colIndex * modulesPerColumn;
           const endIdx = Math.min(startIdx + modulesPerColumn, logoPathsData.length);
           const columnModules = logoPathsData.slice(startIdx, endIdx).map(m => m.id);
           
-          // Activar columna
           setActiveModules(columnModules);
           
-          // Desactivar después de un tiempo
           const clearTimeout = window.setTimeout(() => {
             if (isMounted.current) {
               setActiveModules([]);
@@ -93,7 +101,6 @@ export default function ModulosLogo({ theme }: ModulosLogoProps) {
           
           timeoutsRef.current.push(clearTimeout);
           
-          // Programar la siguiente columna
           const nextTimeout = window.setTimeout(() => {
             if (isMounted.current) {
               animateWave(colIndex + 1);
@@ -103,15 +110,12 @@ export default function ModulosLogo({ theme }: ModulosLogoProps) {
           timeoutsRef.current.push(nextTimeout);
         };
         
-        // Iniciar la animación de onda
         animateWave(0);
       },
       
       verticalWave: () => {
-        // Estimar la matriz de módulos - sin declarar totalModules que no se usa
         const moduleMatrix: string[][] = Array(rows).fill(0).map(() => Array(columns).fill(''));
         
-        // Llenar la matriz con IDs de módulos
         logoPathsData.forEach((module, index) => {
           const row = Math.floor(index / columns);
           const col = index % columns;
@@ -120,27 +124,16 @@ export default function ModulosLogo({ theme }: ModulosLogoProps) {
           }
         });
         
-        // Animar cada fila con un retraso incremental
         const animateRow = (rowIndex: number) => {
           if (!isMounted.current || rowIndex >= rows) {
-            // Programar la próxima animación después de completar la onda
-            const repeatTimeout = window.setTimeout(() => {
-              if (isMounted.current) {
-                runNextPattern();
-              }
-            }, 1500);
-            
-            timeoutsRef.current.push(repeatTimeout);
+            setupRepeatTimeout(1500);
             return;
           }
           
-          // Obtener módulos de esta fila, filtrando IDs vacíos
           const rowModules = moduleMatrix[rowIndex].filter(id => id !== '');
           
-          // Activar fila
           setActiveModules(rowModules);
           
-          // Desactivar después de un tiempo
           const clearTimeout = window.setTimeout(() => {
             if (isMounted.current) {
               setActiveModules([]);
@@ -149,7 +142,6 @@ export default function ModulosLogo({ theme }: ModulosLogoProps) {
           
           timeoutsRef.current.push(clearTimeout);
           
-          // Programar la siguiente fila
           const nextTimeout = window.setTimeout(() => {
             if (isMounted.current) {
               animateRow(rowIndex + 1);
@@ -159,15 +151,12 @@ export default function ModulosLogo({ theme }: ModulosLogoProps) {
           timeoutsRef.current.push(nextTimeout);
         };
         
-        // Iniciar la animación de onda
         animateRow(0);
       },
       
       diagonalWave: () => {
-        // Estimar la matriz de módulos - sin declarar totalModules que no se usa
         const moduleMatrix: string[][] = Array(rows).fill(0).map(() => Array(columns).fill(''));
         
-        // Llenar la matriz con IDs de módulos
         logoPathsData.forEach((module, index) => {
           const row = Math.floor(index / columns);
           const col = index % columns;
@@ -176,24 +165,14 @@ export default function ModulosLogo({ theme }: ModulosLogoProps) {
           }
         });
         
-        // Total de diagonales posibles
         const totalDiagonals = rows + columns - 1;
         
-        // Animar cada diagonal con un retraso incremental
         const animateDiagonal = (diagIndex: number) => {
           if (!isMounted.current || diagIndex >= totalDiagonals) {
-            // Programar la próxima animación después de completar la onda
-            const repeatTimeout = window.setTimeout(() => {
-              if (isMounted.current) {
-                runNextPattern();
-              }
-            }, 1500);
-            
-            timeoutsRef.current.push(repeatTimeout);
+            setupRepeatTimeout(1500);
             return;
           }
           
-          // Obtener módulos de esta diagonal
           const diagModules: string[] = [];
           
           for (let i = 0; i <= diagIndex; i++) {
@@ -208,10 +187,8 @@ export default function ModulosLogo({ theme }: ModulosLogoProps) {
             }
           }
           
-          // Activar diagonal
           setActiveModules(diagModules);
           
-          // Desactivar después de un tiempo
           const clearTimeout = window.setTimeout(() => {
             if (isMounted.current) {
               setActiveModules([]);
@@ -220,7 +197,6 @@ export default function ModulosLogo({ theme }: ModulosLogoProps) {
           
           timeoutsRef.current.push(clearTimeout);
           
-          // Programar la siguiente diagonal
           const nextTimeout = window.setTimeout(() => {
             if (isMounted.current) {
               animateDiagonal(diagIndex + 1);
@@ -230,28 +206,18 @@ export default function ModulosLogo({ theme }: ModulosLogoProps) {
           timeoutsRef.current.push(nextTimeout);
         };
         
-        // Iniciar la animación de onda diagonal
         animateDiagonal(0);
       },
       
       doubleWave: () => {
         const modulesPerColumn = Math.ceil(logoPathsData.length / columns);
         
-        // Animar columnas con un patrón alterno
         const animateDoubleWave = (startCol: number) => {
           if (!isMounted.current || startCol >= columns) {
-            // Programar la próxima animación después de completar la onda
-            const repeatTimeout = window.setTimeout(() => {
-              if (isMounted.current) {
-                runNextPattern();
-              }
-            }, 1500);
-            
-            timeoutsRef.current.push(repeatTimeout);
+            setupRepeatTimeout(1500);
             return;
           }
           
-          // Obtener módulos de las dos columnas (actual y actual+1)
           const waveModules: string[] = [];
           
           for (let c = startCol; c < Math.min(startCol + 2, columns); c++) {
@@ -263,10 +229,8 @@ export default function ModulosLogo({ theme }: ModulosLogoProps) {
             });
           }
           
-          // Activar columnas
           setActiveModules(waveModules);
           
-          // Desactivar después de un tiempo
           const clearTimeout = window.setTimeout(() => {
             if (isMounted.current) {
               setActiveModules([]);
@@ -275,7 +239,6 @@ export default function ModulosLogo({ theme }: ModulosLogoProps) {
           
           timeoutsRef.current.push(clearTimeout);
           
-          // Programar las siguientes columnas (saltando de 2 en 2)
           const nextTimeout = window.setTimeout(() => {
             if (isMounted.current) {
               animateDoubleWave(startCol + 2);
@@ -285,15 +248,12 @@ export default function ModulosLogo({ theme }: ModulosLogoProps) {
           timeoutsRef.current.push(nextTimeout);
         };
         
-        // Iniciar la animación con columnas pares
         animateDoubleWave(0);
         
-        // Después de terminar, iniciar con columnas impares
         const oddTimeout = window.setTimeout(() => {
           if (isMounted.current) {
             clearAllTimeouts();
             
-            // Una breve pausa antes de comenzar las columnas impares
             const pauseTimeout = window.setTimeout(() => {
               if (isMounted.current) {
                 animateDoubleWave(1);
@@ -308,19 +268,16 @@ export default function ModulosLogo({ theme }: ModulosLogoProps) {
       },
       
       sinusoidalWave: () => {
-        const framesCount = 20; // Número de "frames" para la animación completa
+        const framesCount = 20;
         
-        // Función para simular una onda sinusoidal a través de las columnas
         const getSinWaveColumns = (frameIndex: number) => {
-          const waveLength = columns; // Una onda completa a lo largo del logo
+          const waveLength = columns;
           const waveModules: string[] = [];
           
           for (let col = 0; col < columns; col++) {
-            // Calcular la fase de esta columna en la onda sinusoidal
             const phase = (col + frameIndex) % waveLength;
             const sinValue = Math.sin((phase / waveLength) * Math.PI * 2);
             
-            // Si el valor del seno es positivo (parte superior de la onda), activar la columna
             if (sinValue > 0.3) {
               const startIdx = col * Math.ceil(logoPathsData.length / columns);
               const endIdx = Math.min(startIdx + Math.ceil(logoPathsData.length / columns), logoPathsData.length);
@@ -334,27 +291,16 @@ export default function ModulosLogo({ theme }: ModulosLogoProps) {
           return waveModules;
         };
         
-        // Función para animar un frame de la onda
         const animateFrame = (frameIndex: number) => {
           if (!isMounted.current || frameIndex >= framesCount) {
-            // Programar la próxima animación después de completar la onda
-            const repeatTimeout = window.setTimeout(() => {
-              if (isMounted.current) {
-                runNextPattern();
-              }
-            }, 1500);
-            
-            timeoutsRef.current.push(repeatTimeout);
+            setupRepeatTimeout(1500);
             return;
           }
           
-          // Obtener columnas para este frame
           const waveModules = getSinWaveColumns(frameIndex);
           
-          // Activar el patrón de onda
           setActiveModules(waveModules);
           
-          // Programar el siguiente frame
           const nextTimeout = window.setTimeout(() => {
             if (isMounted.current) {
               animateFrame(frameIndex + 1);
@@ -364,24 +310,19 @@ export default function ModulosLogo({ theme }: ModulosLogoProps) {
           timeoutsRef.current.push(nextTimeout);
         };
         
-        // Iniciar la animación de onda sinusoidal
         animateFrame(0);
       }
     };
+  }, [clearAllTimeouts, setupRepeatTimeout, isMounted]);
 
-    return {
-      patterns,
-      patternKeys: Object.keys(patterns) as Array<keyof WavePatterns>
-    };
-  }, [isMounted, clearAllTimeouts]);
-
-  // Función para ejecutar el siguiente patrón
+  // Finalmente definimos runNextPattern que usa patterns y executePattern
   const runNextPattern = useCallback(() => {
-    executePattern(patterns, patternKeys);
-  }, [executePattern, patterns, patternKeys]);
+    executePattern(patterns, Object.keys(patterns) as Array<keyof WavePatterns>);
+  }, [executePattern, patterns]);
 
   useEffect(() => {
     isMounted.current = true;
+    
     return () => {
       isMounted.current = false;
       clearAllTimeouts();
@@ -397,42 +338,44 @@ export default function ModulosLogo({ theme }: ModulosLogoProps) {
     };
   }, [runNextPattern, clearAllTimeouts]);
 
+  // Estilo adicional para el SVG cuando está sobre PixelBackground
+  const svgStyle = {};
+
   return (
-    <div className="flex items-center justify-center w-full h-full">
-      <motion.svg
-        xmlns="http://www.w3.org/2000/svg"
-        width="100%"
-        height="100%"
-        className="w-full h-full"
-        viewBox="0 0 10201 1962"
-        preserveAspectRatio="xMidYMid meet"
-      >
-        <g clipPath="url(#clip0_519_279)">
-          {logoPathsData.map((pathData) => {
-            // Determine the fill color based on hover state or animation
-            const isHovered = hoveredModule === pathData.id;
-            const isActive = activeModules.includes(pathData.id);
-            const fill = isHovered || isActive ? highlightColor : moduleColor;
-            
-            return (
-              <motion.path
-                key={pathData.id}
-                d={pathData.path}
-                fill={fill}
-                onMouseEnter={() => setHoveredModule(pathData.id)}
-                onMouseLeave={() => setHoveredModule(null)}
-                className="cursor-pointer transition-colors duration-200"
-              />
-            );
-          })}
+    <motion.svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="100%"
+      height="100%"
+      className="w-full h-full"
+      viewBox="0 0 10201 1962"
+      preserveAspectRatio="xMidYMid meet"
+      style={svgStyle}
+    >
+      <g clipPath="url(#clip0_519_279)">
+        {logoPathsData.map((pathData) => {
+          // Determine the fill color based on hover state or animation
+          const isHovered = hoveredModule === pathData.id;
+          const isActive = activeModules.includes(pathData.id);
+          const fill = isHovered || isActive ? highlightColor : moduleColor;
           
-          <defs>
-            <clipPath id="clip0_519_279">
-              <path fill="#fff" d="M0 0h10201v1962H0z" />
-            </clipPath>
-          </defs>
-        </g>
-      </motion.svg>
-    </div>
+          return (
+            <motion.path
+              key={pathData.id}
+              d={pathData.path}
+              fill={fill}
+              onMouseEnter={() => setHoveredModule(pathData.id)}
+              onMouseLeave={() => setHoveredModule(null)}
+              className="cursor-pointer transition-colors duration-200"
+            />
+          );
+        })}
+        
+        <defs>
+          <clipPath id="clip0_519_279">
+            <path fill="#fff" d="M0 0h10201v1962H0z" />
+          </clipPath>
+        </defs>
+      </g>
+    </motion.svg>
   );
 } 
