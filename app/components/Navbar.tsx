@@ -14,6 +14,7 @@ export default function Navbar({ theme }: NavbarProps) {
   const [currentTime, setCurrentTime] = useState<string>("00:00:00");
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [isOverPixelBackground, setIsOverPixelBackground] = useState(false);
   
   // Actualizar el reloj en tiempo real - Lógica mejorada y corregida para TypeScript
   useEffect(() => {
@@ -60,14 +61,34 @@ export default function Navbar({ theme }: NavbarProps) {
     };
   }, [isMenuOpen]);
 
+  // Detectar scroll y presencia sobre la sección de contacto
   useEffect(() => {
     const handleScroll = () => {
-      // Podemos ajustar este valor (100) según cuando queremos que aparezca el logo
-      const isScrolled = window.scrollY > window.innerHeight;
+      // Detectar si hemos scrolleado lo suficiente para mostrar el logo
+      const isScrolled = window.scrollY > 100;
+      
+      // Detectar específicamente si estamos sobre la sección de contacto
+      const contactSection = document.getElementById('contact');
+      let isOverContact = false;
+      
+      if (contactSection) {
+        const contactRect = contactSection.getBoundingClientRect();
+        const navbarHeight = 60; // Altura aproximada del navbar
+        
+        // Estamos sobre la sección de contacto cuando:
+        // 1. La parte superior de la sección está por encima de la parte inferior del navbar
+        // 2. La parte inferior de la sección está visible en la ventana
+        isOverContact = contactRect.top < navbarHeight && contactRect.bottom > 0;
+      }
+      
       setScrolled(isScrolled);
+      setIsOverPixelBackground(isOverContact);
     };
 
     window.addEventListener('scroll', handleScroll);
+    // Inicializar estados
+    handleScroll();
+    
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
@@ -76,69 +97,64 @@ export default function Navbar({ theme }: NavbarProps) {
     { href: '#selected-works', label: 'Selected Works' },
     { href: '#contact', label: 'Contact' }
   ];
+  
+  // Para el botón del menú, necesitamos colores de fondo y texto específicos
+  const menuButtonClasses = isOverPixelBackground
+    ? `${theme === 'dark' ? 'bg-[#202021] text-white' : 'bg-[#F0F0F0] text-black'} border border-[#ff4b4b] px-4 py-2 rounded-[8px]`
+    : 'text-[#ff4b4b] border border-[#ff4b4b] px-4 py-2 rounded-[8px]';
 
   return (
     <>
       <motion.nav
         className={`w-full px-[30px] py-3 fixed top-0 left-0 right-0 ${
           isMenuOpen ? 'z-50 bg-opacity-100' : 'z-40 bg-opacity-0'
-        } ${theme === 'dark' ? 'bg-[#202021]' : 'bg-[#F7F7F7]'} transition-colors transition-opacity duration-300`}
+        } ${theme === 'dark' ? 'bg-[#202021]' : 'bg-[#F0F0F0]'} transition-colors transition-opacity duration-300`}
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
       >
-        <div className="grid grid-cols-12 gap-[20px] items-center">
-          {/* Logo */}
-          <AnimatePresence>
-            {(scrolled || isMenuOpen) && (
-              <motion.div 
-                className="col-span-3 md:col-span-2 scale-[1.75] md:scale-100 origin-left"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.3 }}
-              >
-                <ModulosLogo theme={theme} />
-              </motion.div>
-            )}
-          </AnimatePresence>
+        <div className="grid grid-cols-4 md:grid-cols-12 gap-[20px] items-center">
+          {/* Reservamos siempre espacio para el logo para evitar layout shift */}
+          <div className="col-span-1 md:col-span-2 min-h-[40px] relative">
+            <AnimatePresence>
+              {(scrolled || isMenuOpen) && (
+                <motion.div 
+                  className="absolute inset-0 origin-left"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  <ModulosLogo theme={theme} isOverPixelBackground={isOverPixelBackground} />
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
           
           {/* Espacio flexible */}
-          <div className={`${(scrolled || isMenuOpen) ? 'col-span-2 md:col-span-7' : 'col-span-5 md:col-span-9'} transition-all duration-300`}></div>
+          <div className="hidden md:block md:col-span-6"></div>
           
-          {/* Contact Information */}
-          <div className="col-span-6 md:col-span-2">
+          {/* Contact Information - ocupa 2 columnas en mobile, 3 en desktop */}
+          <div className="col-span-2 md:col-span-3">
             <div className="flex flex-col justify-center">
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1 md:gap-2">
                 <div className="relative w-2 h-2 mt-[2px]">
-                  <div className="absolute w-2 h-2 bg-[#DB4C40] rounded-full"></div>
-                  <div className="absolute w-2 h-2 bg-[#DB4C40] rounded-full animate-ping opacity-75"></div>
+                  <div className={`absolute w-2 h-2 bg-[#DB4C40] rounded-full transition-colors duration-300`}></div>
+                  <div className={`absolute w-2 h-2 bg-[#DB4C40] rounded-full animate-ping opacity-75 transition-colors duration-300`}></div>
                 </div>
-                <span className="text-xs md:text-[17px] text-[#DB4C40]">+ Buenos Aires, Argentina</span>
+                <span className={`text-xs md:text-[17px] text-[#ff4b4b] transition-colors duration-300 truncate`}>+ Buenos Aires, Argentina</span>
               </div>
-              <div className="text-xs md:text-[17px] text-[#DB4C40] ml-4">
+              <div className={`text-xs md:text-[17px] text-[#ff4b4b] ml-4 transition-colors duration-300`}>
                 {currentTime}
               </div>
             </div>
           </div>
           
-          {/* Botón de menú */}
+          {/* Botón de menú - 1 columna en ambos */}
           <div className="col-span-1 flex justify-end">
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className={`
-                px-4 py-2 
-                ${theme === 'dark' 
-                  ? 'bg-[#2E2E2E] text-[#DB4C40]' 
-                  : 'bg-[#DB4C40] text-[#F7F7F7]'
-                }
-                rounded-[4px] 
-                text-base 
-                font-normal 
-                transition-colors
-                hover:bg-opacity-90
-                focus:outline-none
-              `}
+              className={`${menuButtonClasses} text-sm md:text-base whitespace-nowrap hover:bg-[#ff4b4b] hover:text-[${theme === 'dark' ? '#202021' : '#F0F0F0'}] transition-colors duration-300`}
               aria-label={isMenuOpen ? "Close menu" : "Open menu"}
             >
               {isMenuOpen ? "CLOSE" : "MENU"}
@@ -147,21 +163,21 @@ export default function Navbar({ theme }: NavbarProps) {
         </div>
       </motion.nav>
 
-      {/* Mega Menu */}
+      {/* Mega Menu - actualizado para usar 4 columnas en mobile */}
       <AnimatePresence>
         {isMenuOpen && (
           <motion.div 
-            className={`fixed inset-0 z-30 ${theme === 'dark' ? 'bg-[#202021]' : 'bg-[#F7F7F7]'}`}
+            className={`fixed inset-0 z-30 ${theme === 'dark' ? 'bg-[#202021]' : 'bg-[#F0F0F0]'}`}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
           >
             <div className="px-[30px] pt-40 pb-20">
-              {/* Menú simplificado con items en rojo */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                {/* Navegación */}
-                <div>
-                  <h2 className="text-[#DB4C40] text-2xl md:text-3xl font-bold mb-6">Menu</h2>
+              {/* Grid de 4 columnas para mobile, 12 para desktop */}
+              <div className="grid grid-cols-4 md:grid-cols-12 gap-[20px]">
+                {/* Navegación - todas las columnas en mobile, 6 en desktop */}
+                <div className="col-span-4 md:col-span-6 mb-8 md:mb-0">
+                  <h2 className="text-[#ff4b4b] text-2xl md:text-3xl font-bold mb-6 transition-colors duration-300">Menu</h2>
                   <ul className="space-y-4">
                     {menuItems.map((item, i) => (
                       <motion.li 
@@ -173,22 +189,22 @@ export default function Navbar({ theme }: NavbarProps) {
                         <Link 
                           href={item.href}
                           onClick={(e) => {
-                            if (item.href === '#selected-works') {
+                            if (item.href.startsWith('#')) {
                               e.preventDefault();
-                              setIsMenuOpen(false); // Primero cerramos el menú
-                              document.body.style.overflow = 'unset'; // Aseguramos que el scroll esté habilitado
+                              setIsMenuOpen(false);
+                              document.body.style.overflow = 'unset';
                               setTimeout(() => {    
-                                const section = document.getElementById('selected-works');
+                                const section = document.getElementById(item.href.substring(1));
                                 if (section) {
                                   section.scrollIntoView({ 
                                     behavior: 'smooth',
                                     block: 'start'
                                   });
                                 }
-                              }, 300); // Aumentamos el delay a 300ms
+                              }, 300);
                             }
                           }}
-                          className="text-xl md:text-2xl text-[#DB4C40] hover:opacity-80 transition-opacity"
+                          className="text-xl md:text-2xl text-[#ff4b4b] hover:opacity-80 transition-opacity transition-colors duration-300"
                         >
                           {item.label}
                         </Link>
@@ -198,11 +214,11 @@ export default function Navbar({ theme }: NavbarProps) {
                 </div>
 
                 {/* Contact section in mega menu */}
-                <div>
-                  <h2 className="text-[#DB4C40] text-2xl md:text-3xl font-bold mb-6">Contact</h2>
+                <div className="col-span-4 md:col-span-6">
+                  <h2 className="text-[#ff4b4b] text-2xl md:text-3xl font-bold mb-6 transition-colors duration-300">Contact</h2>
                   <ul className="space-y-3">
                     <motion.li 
-                      className="text-lg md:text-xl text-[#DB4C40]"
+                      className="text-lg md:text-xl text-[#ff4b4b] transition-colors duration-300"
                       initial={{ opacity: 0, x: -20 }}
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ delay: 0.1 }}
@@ -212,7 +228,7 @@ export default function Navbar({ theme }: NavbarProps) {
                       </Link>
                     </motion.li>
                     <motion.li 
-                      className="text-lg md:text-xl text-[#DB4C40]"
+                      className="text-lg md:text-xl text-[#ff4b4b] transition-colors duration-300"
                       initial={{ opacity: 0, x: -20 }}
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ delay: 0.2 }}

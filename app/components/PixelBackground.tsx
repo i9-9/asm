@@ -13,8 +13,8 @@ interface Pixel {
   size: number;
   pattern: string;
   delay: number;
-  colorDelay: number;
-  distFromCenter: number;
+  initialColor: string;
+  id: string;
 }
 
 const PixelBackground = ({ theme }: PixelProps) => {
@@ -23,9 +23,15 @@ const PixelBackground = ({ theme }: PixelProps) => {
   
   const colors = {
     red: "#ff4b4b",
-    black: theme === 'dark' ? "#202021" : "#202021",
+    black: "#202021",
+    white: "#F0F0F0",
   };
   
+  // Determinar colores basados en el tema
+  const primaryColor = colors.red;
+  const secondaryColor = theme === 'dark' ? colors.black : colors.white;
+  
+  // Manejar el cambio de patrones
   useEffect(() => {
     const patterns = [
       "radar",
@@ -43,30 +49,33 @@ const PixelBackground = ({ theme }: PixelProps) => {
     const patternInterval = setInterval(() => {
       const newPattern = patterns[Math.floor(Math.random() * patterns.length)];
       setCurrentPattern(newPattern);
-      // Regeneramos los círculos para el nuevo patrón
-      setPixels([]);
     }, 20000); // 20 segundos
     
     return () => clearInterval(patternInterval);
-  }, [currentPattern]);
+  }, []);
   
+  // Generar píxeles
   useEffect(() => {
+    // Salir si ya tenemos píxeles o no hay patrón seleccionado
     if (pixels.length > 0 || !currentPattern) return;
     
+    // Esperar a que el DOM esté completamente cargado
+    if (typeof window === 'undefined') return;
+    
     const generateCircles = () => {
-      const windowHeight = window.innerHeight;
       const windowWidth = window.innerWidth;
+      const windowHeight = window.innerHeight;
       
-      const circleSize = 12;
-      const spacing = 25;
+      // Ajustes específicos para dispositivos móviles
+      const isMobile = windowWidth < 768;
+      const circleSize = isMobile ? 6 : 10; // Círculos más pequeños para ahorrar recursos
       
-      // Calculamos el área disponible
-      const availableWidth = windowWidth;
-      const availableHeight = windowHeight;
+      // Mantenemos un espaciado que permita apreciar los patrones
+      const spacing = isMobile ? 28 : 35;
       
       // Calculamos cuántas columnas y filas caben
-      const columns = Math.floor(availableWidth / spacing);
-      const rows = Math.floor(availableHeight / spacing);
+      const columns = Math.floor(windowWidth / spacing);
+      const rows = Math.floor(windowHeight / spacing);
       
       // Calculamos el centrado exacto
       const totalPatternWidth = columns * spacing;
@@ -82,6 +91,39 @@ const PixelBackground = ({ theme }: PixelProps) => {
       
       const newPixels: Pixel[] = [];
       
+      // Ajustamos densidad por patrón - algunos patrones necesitan más píxeles para ser visibles
+      let baseSkipProb;
+      let centerDensityBoost;
+      
+      switch (currentPattern) {
+        case "radar":
+          // El radar necesita mayor densidad angular
+          baseSkipProb = isMobile ? 0.5 : 0.3;
+          centerDensityBoost = 0.25;
+          break;
+        case "wave": 
+          // Las ondas necesitan ser más densas para verse bien
+          baseSkipProb = isMobile ? 0.45 : 0.25;
+          centerDensityBoost = 0.4;
+          break;
+        case "ripple":
+          // Los anillos necesitan buena distribución radial
+          baseSkipProb = isMobile ? 0.5 : 0.3;
+          centerDensityBoost = 0.35;
+          break;
+        case "sweep":
+          // El barrido necesita densidad horizontal
+          baseSkipProb = isMobile ? 0.5 : 0.3;
+          centerDensityBoost = 0.25;
+          break;
+        default:
+          baseSkipProb = isMobile ? 0.55 : 0.35;
+          centerDensityBoost = 0.3;
+      }
+      
+      // Crear mapa de coordenadas para garantizar distribución uniforme
+      const coordMap = new Map();
+      
       for (let y = 0; y < rows; y++) {
         for (let x = 0; x < columns; x++) {
           // Posición exacta de cada círculo
@@ -93,45 +135,80 @@ const PixelBackground = ({ theme }: PixelProps) => {
           const dy = pixelCenterY - centerY;
           const distFromCenter = Math.sqrt(dx * dx + dy * dy);
           
-          // Calculamos ángulo desde el centro para efectos barrido
-          const angle = Math.atan2(dy, dx) * (180 / Math.PI);
+          // Normalizamos la distancia al centro (0-1 donde 0 es el centro y 1 es la esquina más lejana)
+          const maxPossibleDist = Math.sqrt(windowWidth * windowWidth / 4 + windowHeight * windowHeight / 4);
+          const normalizedDist = distFromCenter / maxPossibleDist;
           
-          // Delay para el patrón principal
+          // Calculamos ángulo desde el centro para efectos barrido (0-360)
+          const angle = Math.atan2(dy, dx) * (180 / Math.PI) + 180; // +180 para tener valores 0-360
+          
+          // Patrones de delay ajustados para cada tipo
           let delay = 0;
+          let skipModifier = 0; // Modificador para skip probability basado en el patrón
           
           switch (currentPattern) {
             case "radar":
-              // Barrido circular, como un radar
-              delay = ((angle + 180) / 360) * 3; // Barrido completo en 3 segundos
+              // Barrido angular, sectores más definidos
+              delay = (angle / 360) * 4; // Completa rotación en 4 segundos
+              
+              // Hacemos que algunos sectores angulares tengan más densidad (cada 30 grados)
+              const sectorAngle = Math.floor(angle / 30) * 30;
+              skipModifier = (angle - sectorAngle < 10) ? -0.2 : 0; // Más densidad en estos sectores
               break;
+              
             case "wave":
-              // Onda desde el centro
-              delay = distFromCenter * 0.001; // Retardo basado en distancia
+              // Ondas que salen desde el centro, más evidentes
+              delay = (distFromCenter / maxPossibleDist) * 3; // Más lento
+              
+              // Aumentar densidad en ciertas distancias para crear anillos más evidentes
+              const normalizedWaveDist = (distFromCenter % (spacing * 3)) / (spacing * 3);
+              skipModifier = (normalizedWaveDist < 0.3) ? -0.3 : 0; // Más densidad en estas distancias
               break;
+              
             case "ripple":
-              // Ondas concéntricas
-              delay = (distFromCenter % 200) * 0.005; // Múltiples anillos
+              // Múltiples anillos concéntricos
+              delay = ((distFromCenter % (spacing * 4)) / (spacing * 4)) * 2;
+              
+              // Mayor densidad en los bordes de cada anillo
+              const ringPosition = (distFromCenter % (spacing * 4)) / (spacing * 4);
+              skipModifier = (ringPosition > 0.4 && ringPosition < 0.6) ? -0.25 : 0;
               break;
+              
             case "sweep":
-              // Barrido horizontal
-              delay = (pixelCenterX / windowWidth) * 2; // Barrido en 2 segundos
+              // Barrido horizontal más definido
+              delay = (pixelCenterX / windowWidth) * 3; // 3 segundos de lado a lado
+              
+              // Densidad variable horizontalmente para formar líneas verticales
+              const normalizedX = (pixelCenterX % (spacing * 4)) / (spacing * 4);
+              skipModifier = (normalizedX < 0.2) ? -0.3 : 0; // Líneas verticales más definidas
               break;
           }
           
-          // Para no sobrecargar el rendimiento
-          if (Math.random() > 0.2) {
-            // Delay independiente para el cambio de color
-            const colorDelay = Math.random() * 10; // Entre 0 y 10 segundos
+          // Base probability ajustada según el patrón
+          const skipProbability = baseSkipProb + (normalizedDist * centerDensityBoost) + skipModifier;
+          
+          // Para evitar efectos de patrón demasiado regulares
+          const jitter = spacing * 0.1; // 10% de aleatoriedad
+          const jitteredX = pixelCenterX + (Math.random() * jitter * 2 - jitter);
+          const jitteredY = pixelCenterY + (Math.random() * jitter * 2 - jitter);
+          
+          if (Math.random() > skipProbability) {
+            // Color inicial - preferimos más píxeles primarios para los patrones
+            // Esto hace que los patrones sean más visibles
+            const initialColor = Math.random() > 0.4 ? primaryColor : secondaryColor;
             
             newPixels.push({
-              left: pixelCenterX - (circleSize / 2),
-              top: pixelCenterY - (circleSize / 2),
+              left: jitteredX - (circleSize / 2),
+              top: jitteredY - (circleSize / 2),
               size: circleSize,
               pattern: currentPattern,
               delay: delay,
-              colorDelay: colorDelay,
-              distFromCenter: distFromCenter
+              initialColor: initialColor,
+              id: `pixel-${x}-${y}`
             });
+            
+            // Guardamos coordenada para evitar superposición
+            coordMap.set(`${x}-${y}`, true);
           }
         }
       }
@@ -139,59 +216,113 @@ const PixelBackground = ({ theme }: PixelProps) => {
       setPixels(newPixels);
     };
     
+    // Llamamos a la función para generar los círculos
     generateCircles();
     
-    const handleResize = () => setPixels([]);
+    // Regeneramos cuando cambie el tamaño de la pantalla
+    const handleResize = () => {
+      setPixels([]);
+    };
+    
     window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, [currentPattern, theme]);
+    window.addEventListener('orientationchange', handleResize);
+    
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      window.removeEventListener('orientationchange', handleResize);
+    };
+  }, [currentPattern, pixels.length]);
   
   return (
-    <div className="absolute inset-0 w-full h-full" style={{ zIndex: 0 }}>
-      {pixels.map((pixel, index) => {
-        // Animación del patrón principal - enfocada en efectos tipo radar
-        let patternAnimation;
+    <div 
+      className="absolute inset-0 w-full h-full" 
+      style={{ 
+        zIndex: 0,
+        backgroundColor: theme === 'dark' ? colors.black : colors.white
+      }}
+    >
+      {pixels.map((pixel) => {
+        // Animaciones personalizadas por patrón para hacerlos más distinguibles
+        let scaleValues;
+        let colorAnimation;
+        
+        // Duración base para cada patrón
+        let duration;
         
         switch (pixel.pattern) {
           case "radar":
-            // Efecto de barrido con escala
-            patternAnimation = {
-              scale: [1, 1.3, 1],
-              opacity: [1, 0.7, 1],
+            // Radar tiene animación más pronunciada en escala
+            scaleValues = [1, 1.25, 1];
+            // Más contrastante en colores para el radar
+            colorAnimation = {
+              backgroundColor: [
+                pixel.initialColor,
+                pixel.initialColor === primaryColor ? secondaryColor : primaryColor,
+                pixel.initialColor
+              ]
             };
+            duration = 4;
             break;
+            
           case "wave":
-            // Onda expandiéndose
-            patternAnimation = {
-              scale: [1, 1.2, 1],
+            // Para ondas, escalado más suave pero pulsante
+            scaleValues = [1, 1.15, 1];
+            // Transición de color más larga para wave
+            colorAnimation = {
+              backgroundColor: [
+                pixel.initialColor,
+                pixel.initialColor === primaryColor ? secondaryColor : primaryColor,
+                pixel.initialColor === primaryColor ? secondaryColor : primaryColor,
+                pixel.initialColor
+              ]
             };
+            duration = 5;
             break;
+            
           case "ripple":
-            // Pulsaciones concéntricas
-            patternAnimation = {
-              scale: [1, 1.5, 1],
+            // Anillos con expansión más dramática
+            scaleValues = [1, 1.3, 1];
+            // Color estándar para ripple
+            colorAnimation = {
+              backgroundColor: [
+                pixel.initialColor,
+                pixel.initialColor === primaryColor ? secondaryColor : primaryColor,
+                pixel.initialColor
+              ]
             };
+            duration = 3.5; // Más rápido para el efecto de ondas
             break;
+            
           case "sweep":
-            // Barrido horizontal
-            patternAnimation = {
-              scale: [1, 1.3, 1],
+            // Barrido con animación horizontal
+            scaleValues = [1, 1.2, 1];
+            // Efecto de resplandor para sweep
+            colorAnimation = {
+              backgroundColor: [
+                pixel.initialColor,
+                pixel.initialColor === primaryColor ? secondaryColor : primaryColor,
+                pixel.initialColor
+              ],
+              opacity: [1, 0.8, 1]
             };
+            duration = 4.5;
             break;
+            
           default:
-            patternAnimation = {
-              scale: [1, 1.2, 1],
+            scaleValues = [1, 1.1, 1];
+            colorAnimation = {
+              backgroundColor: [
+                pixel.initialColor,
+                pixel.initialColor === primaryColor ? secondaryColor : primaryColor,
+                pixel.initialColor
+              ]
             };
+            duration = 4;
         }
-        
-        // Alternando entre rojo y negro para todos los círculos
-        const colorAnimation = {
-          backgroundColor: [colors.black, colors.red, colors.black],
-        };
         
         return (
           <motion.div
-            key={`${pixel.pattern}-${index}`}
+            key={pixel.id}
             style={{
               position: 'absolute',
               left: `${pixel.left}px`,
@@ -199,19 +330,18 @@ const PixelBackground = ({ theme }: PixelProps) => {
               width: `${pixel.size}px`,
               height: `${pixel.size}px`,
               borderRadius: '50%',
-              backgroundColor: colors.black,
+              backgroundColor: pixel.initialColor,
               aspectRatio: '1/1',
-              display: 'block',
-              overflow: 'hidden'
+              willChange: 'transform, background-color', // Optimización de rendimiento
             }}
             animate={{
-              ...patternAnimation,
+              scale: scaleValues,
               ...colorAnimation
             }}
             transition={{
               repeat: Infinity,
-              repeatType: "mirror",
-              duration: 1.5,
+              repeatType: "loop",
+              duration: duration,
               delay: pixel.delay,
               ease: "easeInOut",
             }}

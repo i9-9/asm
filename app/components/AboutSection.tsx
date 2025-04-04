@@ -102,30 +102,35 @@ export default function AboutSection({ theme }: AboutSectionProps) {
   return (
     <section 
       id="about-section" 
-      className={`w-full h-screen ${theme === 'dark' ? 'bg-[#202021]' : 'bg-[#F7F7F7]'} relative`}
+      className={`w-full h-screen ${theme === 'dark' ? 'bg-[#202021]' : 'bg-[#F0F0F0]'} relative`}
     >
-      <div className="absolute top-0 left-[30px] w-[calc((100%/12)*2)] h-full hidden md:block">
-        <VerticalMarquee />
-      </div>
+      <div className="px-[30px] h-full">
+        <div className="grid grid-cols-4 md:grid-cols-12 h-full gap-[20px]">
+          <div className="hidden md:block md:col-span-2 h-full min-h-[40px] relative">
+            <div className="absolute inset-0 flex items-center justify-center">
+              <VerticalMarquee className="h-full" />
+            </div>
+          </div>
 
-      <div className="px-[30px] py-[60px] h-full flex items-center">
-        <div className="grid grid-cols-4 md:grid-cols-12 gap-[20px] w-full">
-          <div className="hidden md:block md:col-span-2" />
-          <div className="col-span-4 md:col-start-5 md:col-span-7">
-            <div className="text-[32px] leading-[40px] md:text-[46px] md:leading-[56px] tracking-[-0.03em] mb-6">
-              {(isMobile ? text1Mobile : text1Desktop).map((line, i) => (
-                <AnimatedLine key={i} text={line} />
-              ))}
-            </div>
-            <div className="text-[32px] leading-[40px] md:text-[46px] md:leading-[56px] tracking-[-0.03em] mb-12">
-              {(isMobile ? text2Mobile : text2Desktop).map((line, i) => (
-                <AnimatedLine key={i} text={line} />
-              ))}
-            </div>
-            <div className="text-[32px] leading-[40px] md:text-[46px] md:leading-[56px] tracking-[-0.03em] font-bold">
-              {text3.map((line, i) => (
-                <AnimatedLine key={i} text={line} />
-              ))}
+          <div className="hidden md:block md:col-span-2"></div>
+
+          <div className="col-span-4 md:col-span-8 py-[60px] h-full flex items-center">
+            <div className="w-full">
+              <div className="text-[32px] leading-[40px] md:text-[46px] md:leading-[56px] tracking-[-0.03em] mb-6">
+                {(isMobile ? text1Mobile : text1Desktop).map((line, i) => (
+                  <AnimatedLine key={i} text={line} />
+                ))}
+              </div>
+              <div className="text-[32px] leading-[40px] md:text-[46px] md:leading-[56px] tracking-[-0.03em] mb-12">
+                {(isMobile ? text2Mobile : text2Desktop).map((line, i) => (
+                  <AnimatedLine key={i} text={line} />
+                ))}
+              </div>
+              <div className="text-[32px] leading-[40px] md:text-[46px] md:leading-[56px] tracking-[-0.03em] font-bold">
+                {text3.map((line, i) => (
+                  <AnimatedLine key={i} text={line} />
+                ))}
+              </div>
             </div>
           </div>
         </div>
