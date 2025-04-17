@@ -93,17 +93,17 @@ export default function ContactSection({ theme }: ContactSectionProps) {
   return (
     <section 
       id="contact" 
-      className={`w-full h-screen ${theme === 'dark' ? 'bg-[#202021]' : 'bg-[#F7F7F7]'} relative overflow-hidden`}
+      className={`w-full min-h-screen ${theme === 'dark' ? 'bg-[#202021]' : 'bg-[#F3F1E4]'} relative overflow-hidden`}
     >
       {/* Fondo de píxeles */}
       <PixelBackground theme={theme} />
       
-      {/* Contenedor para el texto y botones - posicionado abajo a la izquierda */}
+      {/* Contenedor para el texto y botones - posicionado abajo */}
       <div className="absolute bottom-0 left-0 w-full px-[30px] pb-[60px] z-10">
-        <div className="grid grid-cols-4 md:grid-cols-12 gap-[20px] w-full">
-          {/* Contenedor de texto - 8 columnas */}
+        <div className="grid grid-cols-4 md:grid-cols-12 gap-[10px] md:gap-[20px] w-full">
+          {/* Contenedor de texto - Completo en móvil, 8 columnas en desktop */}
           <div className="col-span-4 md:col-span-8">
-            <div className={`space-y-4 p-6 md:p-12 rounded-lg ${theme === 'dark' ? 'bg-black/30' : 'bg-white/30'} backdrop-blur-md w-full h-full`}>
+            <div className={`space-y-2 md:space-y-4 p-4 md:p-6 lg:p-12 rounded-lg ${theme === 'dark' ? 'bg-black/30' : 'bg-[#F3F1E4]/30'} backdrop-blur-md w-full h-full`}>
               <motion.div 
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
@@ -111,7 +111,7 @@ export default function ContactSection({ theme }: ContactSectionProps) {
               >
                 <HackerText 
                   text="ASSEMBLY BS.AS"
-                  className="text-[32px] md:text-[96px] leading-[0.75] tracking-[-0.03em] text-[#ff4b4b] whitespace-nowrap scotch-display"
+                  className="text-[32px] md:text-[96px] leading-[0.9] md:leading-[0.75] tracking-[-0.03em] text-[#ff4b4b] whitespace-nowrap scotch-display"
                 />
               </motion.div>
               
@@ -147,28 +147,28 @@ export default function ContactSection({ theme }: ContactSectionProps) {
             </div>
           </div>
           
-          {/* Botones - 4 columnas restantes */}
-          <div className="hidden md:flex md:col-span-4 flex-col gap-4 h-full">
+          {/* Botones - gap reducido para coincidir con la grid */}
+          <div className="col-span-4 md:col-span-4 flex flex-col gap-[10px] md:gap-[20px] h-auto md:h-full">
             <motion.button
-              className={`flex-1 rounded-lg ${theme === 'dark' ? 'bg-black/30' : 'bg-white/30'} backdrop-blur-md hover:bg-[#ff4b4b]/20 flex items-center justify-center transition-colors duration-300`}
+              className={`h-[80px] md:flex-1 rounded-lg ${theme === 'dark' ? 'bg-black/30' : 'bg-[#F3F1E4]/30'} backdrop-blur-md hover:bg-[#ff4b4b]/20 flex items-center justify-center transition-colors duration-300`}
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.5, delay: 0.8 }}
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
             >
-              <span className="text-[#ff4b4b] text-[32px] font-normal scotch-display">GET IN TOUCH</span>
+              <span className="text-[#ff4b4b] text-[24px] md:text-[32px] font-normal scotch-display">GET IN TOUCH</span>
             </motion.button>
             
             <motion.button
-              className={`flex-1 rounded-lg ${theme === 'dark' ? 'bg-black/30' : 'bg-white/30'} backdrop-blur-md hover:bg-[#ff4b4b]/20 flex items-center justify-center transition-colors duration-300`}
+              className={`h-[80px] md:flex-1 rounded-lg ${theme === 'dark' ? 'bg-black/30' : 'bg-[#F3F1E4]/30'} backdrop-blur-md hover:bg-[#ff4b4b]/20 flex items-center justify-center transition-colors duration-300`}
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.5, delay: 1 }}
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
             >
-              <span className="text-[#ff4b4b] text-[32px] font-normal scotch-display">VIEW PROJECTS</span>
+              <span className="text-[#ff4b4b] text-[24px] md:text-[32px] font-normal scotch-display">VIEW PROJECTS</span>
             </motion.button>
           </div>
         </div>

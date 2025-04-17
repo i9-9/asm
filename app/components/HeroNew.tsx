@@ -18,24 +18,29 @@ export default function HeroNew({ theme, toggleTheme }: HeroProps) {
       transition={{ duration: 0.5 }}
     >
       {/* Contenedor principal con padding-top */}
-      <div className="flex-1 flex flex-col items-center pt-[320px]">
-        {/* Logo animado */}
-        <div className="mb-16 scale-100 md:scale-[1.35] w-[75vw] md:w-[65vw] lg:w-[55vw]">
-          <ModulosLogo theme={theme} />
+      <div className="flex-1 w-full flex flex-col items-center pt-[320px] px-4 md:px-8">
+        {/* Logo container with 12-column grid */}
+        <div className="w-full grid grid-cols-12">
+          {/* Logo centered in mobile, 8 columns and centered in larger screens */}
+          <div className="col-span-12 md:col-span-8 md:col-start-3 flex justify-center">
+            <div className="scale-100 md:scale-[1.35] w-full max-w-[90%] md:max-w-full">
+              <ModulosLogo theme={theme} />
+            </div>
+          </div>
         </div>
       </div>
       
       {/* Footer con elementos alineados */}
       <div className="w-full px-8 py-6">
         {/* Grid para mejor control del espacio */}
-        <div className="grid grid-cols-2 md:grid-cols-3 items-center gap-4">
-          {/* Título */}
-          <h1 className="text-base md:text-xl uppercase text-[#DB4C40]">
+        <div className="grid grid-cols-2 md:grid-cols-12 items-center gap-4">
+          {/* Título - 4 columns */}
+          <h1 className="text-base md:text-xl uppercase text-[#DB4C40] col-span-1 md:col-span-4">
             <span className="font-bold">DESIGN & DEVELOPMENT</span> STUDIO
           </h1>
 
-          {/* Scroll down - solo en desktop */}
-          <div className="hidden md:flex justify-center">
+          {/* Scroll down - 4 columns centered */}
+          <div className="hidden md:flex justify-center col-span-4">
             <button
               onClick={() => {
                 document.getElementById('about-section')?.scrollIntoView({ 
@@ -56,8 +61,8 @@ export default function HeroNew({ theme, toggleTheme }: HeroProps) {
             </button>
           </div>
 
-          {/* Toggle theme */}
-          <div className="flex justify-end">
+          {/* Toggle theme - 4 columns, right aligned */}
+          <div className="flex justify-end col-span-1 md:col-span-4">
             <button
               onClick={toggleTheme}
               className="focus:outline-none"
@@ -76,7 +81,7 @@ export default function HeroNew({ theme, toggleTheme }: HeroProps) {
                   width="42" 
                   height="21" 
                   rx="7.5" 
-                  fill={theme === 'dark' ? '#202021' : '#F7F7F7'}
+                  fill={theme === 'dark' ? '#202021' : '#F3F1E4'}
                   stroke="#DB4C40"
                 />
                 <motion.circle

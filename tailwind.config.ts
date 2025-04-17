@@ -12,7 +12,7 @@ const config: Config = {
       colors: {
         accent: "#DB4C40",
         dark: "#202021",
-        light: "#F7F7F7",
+        light: "#F3F1E4",
       },
     },
   },

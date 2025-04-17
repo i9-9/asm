@@ -102,7 +102,7 @@ export default function AboutSection({ theme }: AboutSectionProps) {
   return (
     <section 
       id="about-section" 
-      className={`w-full h-screen ${theme === 'dark' ? 'bg-[#202021]' : 'bg-[#F0F0F0]'} relative`}
+      className={`w-full h-screen ${theme === 'dark' ? 'bg-[#202021]' : 'bg-[#F3F1E4]'} relative`}
     >
       <div className="px-[30px] h-full">
         <div className="grid grid-cols-4 md:grid-cols-12 h-full gap-[20px]">

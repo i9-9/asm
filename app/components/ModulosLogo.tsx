@@ -35,8 +35,8 @@ export default function ModulosLogo({ theme, isOverPixelBackground = false }: Mo
   // Colores para diferentes estados y condiciones
   const colors = {
     default: theme === 'light' ? "#DB4C40" : "#DB4C40",    // Color normal (rojo)
-    white: "#F0F0F0",                                      // Blanco puro
-    highlight: theme === 'light' ? "#202021" : "#F0F0F0",  // Color de resaltado según tema
+    white: "#F3F1E4",                                      // Blanco puro
+    highlight: theme === 'light' ? "#202021" : "#F3F1E4",  // Color de resaltado según tema
   };
   
   // Determinar los colores a usar basado en la posición

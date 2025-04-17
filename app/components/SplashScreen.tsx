@@ -28,9 +28,9 @@ export default function SplashScreen({ onFinish }: { onFinish: () => void }) {
         setIsLoading(false);
         setTimeout(() => {
           setHidden(true);
-          setTimeout(onFinish, 800);
-        }, 1500);
-      }, 2000);
+          setTimeout(onFinish, 500);
+        }, 800);
+      }, 800);
     };
 
     if (document.readyState === 'complete') {

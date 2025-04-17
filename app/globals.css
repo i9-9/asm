@@ -15,7 +15,7 @@ body::-webkit-scrollbar {
 }
 
 :root {
-  --background: #F7F7F7;
+  --background: #F3F1E4;
   --text: #202021;
   --color-primary: #ef3d37; /* Primary color */
   --color-secondary: #f4f3e5; /* Secondary color */
@@ -82,9 +82,9 @@ body {
 }
 
 .dot--white {
-  background-color: white;
-  background-color: color(display-p3 1 1 1);
-  background-color: color(rec2020 2 2 2);
+  background-color: #F3F1E4;
+  background-color: color(display-p3 0.941 0.941 0.941);
+  background-color: color(rec2020 0.941 0.941 0.941);
 } 
 
 
@@ -94,9 +94,9 @@ body {
 
 .dark {
   --background: #202021;
-  --text: #F7F7F7;
+  --text: #F3F1E4;
   --bg-color: #212122;
-  --text-color: #ffffff;
+  --text-color: #F3F1E4;
   --primary-color: #818cf8;
   --secondary-color: #a5b4fc;
 }

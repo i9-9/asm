@@ -4,6 +4,8 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import ModulosLogo from './ModulosLogo';
+import AnimatedIcons from './AnimatedIcons';
+import { usePathname } from 'next/navigation';
 
 // Añadir esta interfaz de props
 interface NavbarProps {
@@ -15,6 +17,10 @@ export default function Navbar({ theme }: NavbarProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [isOverPixelBackground, setIsOverPixelBackground] = useState(false);
+  const pathname = usePathname();
+  
+  // Check if we're on a project page
+  const isProjectPage = pathname?.startsWith('/projects/');
   
   // Actualizar el reloj en tiempo real - Lógica mejorada y corregida para TypeScript
   useEffect(() => {
@@ -100,7 +106,7 @@ export default function Navbar({ theme }: NavbarProps) {
   
   // Para el botón del menú, necesitamos colores de fondo y texto específicos
   const menuButtonClasses = isOverPixelBackground
-    ? `${theme === 'dark' ? 'bg-[#202021] text-white' : 'bg-[#F0F0F0] text-black'} border border-[#ff4b4b] px-4 py-2 rounded-[8px]`
+    ? `${theme === 'dark' ? 'bg-[#202021] text-[#F3F1E4]' : 'bg-[#F3F1E4] text-black'} border border-[#ff4b4b] px-4 py-2 rounded-[8px]`
     : 'text-[#ff4b4b] border border-[#ff4b4b] px-4 py-2 rounded-[8px]';
 
   return (
@@ -108,18 +114,18 @@ export default function Navbar({ theme }: NavbarProps) {
       <motion.nav
         className={`w-full px-[30px] py-3 fixed top-0 left-0 right-0 ${
           isMenuOpen ? 'z-50 bg-opacity-100' : 'z-40 bg-opacity-0'
-        } ${theme === 'dark' ? 'bg-[#202021]' : 'bg-[#F0F0F0]'} transition-colors transition-opacity duration-300`}
+        } ${theme === 'dark' ? 'bg-[#202021]' : 'bg-[#F3F1E4]'} transition-colors transition-opacity duration-300`}
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
       >
         <div className="grid grid-cols-4 md:grid-cols-12 gap-[20px] items-center">
           {/* Reservamos siempre espacio para el logo para evitar layout shift */}
-          <div className="col-span-1 md:col-span-2 min-h-[40px] relative">
+          <div className="col-span-1 md:col-span-2 min-h-[40px] relative flex items-center">
             <AnimatePresence>
-              {(scrolled || isMenuOpen) && (
+              {(scrolled || isMenuOpen || isProjectPage) && (
                 <motion.div 
-                  className="absolute inset-0 origin-left"
+                  className="w-full h-full"
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
@@ -142,10 +148,10 @@ export default function Navbar({ theme }: NavbarProps) {
                   <div className={`absolute w-2 h-2 bg-[#DB4C40] rounded-full transition-colors duration-300`}></div>
                   <div className={`absolute w-2 h-2 bg-[#DB4C40] rounded-full animate-ping opacity-75 transition-colors duration-300`}></div>
                 </div>
-                <span className={`text-xs md:text-[17px] text-[#ff4b4b] transition-colors duration-300 truncate`}>+ Buenos Aires, Argentina</span>
+                <span className={`text-xs md:text-[17px] text-[#ff4b4b] transition-colors duration-300 leading-tight`}>+ Buenos Aires, Argentina</span>
               </div>
-              <div className={`text-xs md:text-[17px] text-[#ff4b4b] ml-4 transition-colors duration-300`}>
-                {currentTime}
+              <div className={`text-xs md:text-[17px] text-[#ff4b4b] ml-4 transition-colors duration-300 leading-tight`}>
+                &nbsp;&nbsp;&nbsp;{currentTime}
               </div>
             </div>
           </div>
@@ -154,7 +160,7 @@ export default function Navbar({ theme }: NavbarProps) {
           <div className="col-span-1 flex justify-end">
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className={`${menuButtonClasses} text-sm md:text-base whitespace-nowrap hover:bg-[#ff4b4b] hover:text-[${theme === 'dark' ? '#202021' : '#F0F0F0'}] transition-colors duration-300`}
+              className={`${menuButtonClasses} text-sm md:text-base whitespace-nowrap hover:bg-[#ff4b4b] hover:text-[${theme === 'dark' ? '#202021' : '#F3F1E4'}] transition-colors duration-300`}
               aria-label={isMenuOpen ? "Close menu" : "Open menu"}
             >
               {isMenuOpen ? "CLOSE" : "MENU"}
@@ -167,7 +173,7 @@ export default function Navbar({ theme }: NavbarProps) {
       <AnimatePresence>
         {isMenuOpen && (
           <motion.div 
-            className={`fixed inset-0 z-30 ${theme === 'dark' ? 'bg-[#202021]' : 'bg-[#F0F0F0]'}`}
+            className={`fixed inset-0 z-30 ${theme === 'dark' ? 'bg-[#202021]' : 'bg-[#F3F1E4]'}`}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -245,6 +251,7 @@ export default function Navbar({ theme }: NavbarProps) {
                   </ul>
                 </div>
               </div>
+              <AnimatedIcons theme={theme} />
             </div>
           </motion.div>
         )}

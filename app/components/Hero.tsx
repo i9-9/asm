@@ -56,7 +56,7 @@ export default function Hero({ theme, toggleTheme }: HeroProps) {
               width="42" 
               height="21" 
               rx="7.5" 
-              fill={theme === 'light' ? "#FFFFFF" : "#202021"} 
+              fill={theme === 'light' ? "#F3F1E4" : "#202021"} 
               stroke={theme === 'light' ? "#C43931" : "#DB4C40"}
             />
             <motion.circle

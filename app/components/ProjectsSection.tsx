@@ -67,34 +67,56 @@ export default function ProjectsSection({ theme }: ProjectsSectionProps) {
   const expandAnimation = {
     initial: { 
       opacity: 0,
-      x: -20,
-      height: 0
+      height: 0,
+      scale: 0.98,
+      transformOrigin: "center top"
     },
     animate: { 
       opacity: 1,
-      x: 0,
       height: 'auto',
+      scale: 1,
       transition: {
-        duration: 0.3,
-        ease: "easeOut"
+        height: {
+          duration: 0.6,
+          ease: [0.16, 1, 0.3, 1] // Custom bezier curve for smoother animation
+        },
+        opacity: {
+          duration: 0.4,
+          ease: "easeOut",
+          delay: 0.1
+        },
+        scale: {
+          duration: 0.5,
+          ease: "easeOut"
+        }
       }
     },
     exit: { 
       opacity: 0,
-      x: -20,
       height: 0,
+      scale: 0.98,
       transition: {
-        duration: 0.2,
-        ease: "easeIn"
+        height: {
+          duration: 0.4,
+          ease: [0.32, 0, 0.67, 0] // Smooth easing out
+        },
+        opacity: {
+          duration: 0.25,
+          ease: "easeIn"
+        },
+        scale: {
+          duration: 0.3,
+          ease: "easeIn"
+        }
       }
     }
   };
 
   return (
-    <section id="selected-works" className={`w-full ${theme === 'dark' ? 'bg-[#202021]' : 'bg-[#F7F7F7]'}`}>
+    <section id="selected-works" className={`w-full ${theme === 'dark' ? 'bg-[#202021]' : 'bg-[#F3F1E4]'}`}>
       <div className="px-[30px] py-[60px]">
         {/* Grid container para el título principal */}
-        <div className="grid grid-cols-4 md:grid-cols-12 gap-[20px] mb-20">
+        <div className="grid grid-cols-4 md:grid-cols-12 gap-[20px] mb-6">
           <h2 className="col-span-4 md:col-start-5 md:col-span-4 text-[#ff4b4b] text-2xl font-bold">
             SELECTED WORKS
           </h2>
@@ -140,28 +162,56 @@ export default function ProjectsSection({ theme }: ProjectsSectionProps) {
                       initial="initial"
                       animate="animate"
                       exit="exit"
+                      layout
                     >
                       {/* Descripción expandida */}
                       <div className="md:col-span-2 order-2 md:order-1">
-                        <h4 className="text-[#ff4b4b] text-[19px] uppercase mb-4">Description</h4>
-                        <p className="text-[#ff4b4b] text-[16px] leading-[1.4] mb-8">
-                          {project.description}
-                        </p>
-                        <button className="px-4 py-2 border border-[#ff4b4b] text-[#ff4b4b] hover:bg-[#ff4b4b] hover:text-[#202021] transition-colors rounded-[8px]">
-                          See project
-                        </button>
+                        <motion.div
+                          initial={{ opacity: 0, y: 20 }}
+                          animate={{ 
+                            opacity: 1, 
+                            y: 0,
+                            transition: { 
+                              delay: 0.1,
+                              duration: 0.4
+                            }
+                          }}
+                        >
+                          <h4 className="text-[#ff4b4b] text-[19px] uppercase mb-4">Description</h4>
+                          <p className="text-[#ff4b4b] text-[16px] leading-[1.4] mb-8">
+                            {project.description}
+                          </p>
+                          <motion.button 
+                            className="px-4 py-2 border border-[#ff4b4b] text-[#ff4b4b] hover:bg-[#ff4b4b] hover:text-[#202021] transition-colors rounded-[8px]"
+                            whileHover={{ scale: 1.05 }}
+                            whileTap={{ scale: 0.98 }}
+                          >
+                            See project
+                          </motion.button>
+                        </motion.div>
                       </div>
 
                       {/* Imagen expandida - Ahora segundo */}
                       <div className="md:col-span-3 order-1 md:order-2">
-                        <div className="aspect-square bg-[#2E2E2E] relative overflow-hidden rounded-[4px]">
+                        <motion.div 
+                          className="aspect-square bg-[#2E2E2E] relative overflow-hidden rounded-[4px]"
+                          initial={{ opacity: 0, scale: 0.9 }}
+                          animate={{ 
+                            opacity: 1, 
+                            scale: 1,
+                            transition: { 
+                              duration: 0.5,
+                              ease: "easeOut"
+                            }
+                          }}
+                        >
                           <Image
                             src="/img/kostume_tiny.png"
                             alt={project.title}
                             fill
                             className="object-cover"
                           />
-                        </div>
+                        </motion.div>
                       </div>
                     </motion.div>
                   )}

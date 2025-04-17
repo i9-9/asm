@@ -1,0 +1,39 @@
+{
+  "title": "Kostüme",
+  "stack": "Next.js + TailwindCSS",
+  "duration": "11 Month",
+  "year": "2022",
+  "services": "Web Design + Web Development",
+  "client": {
+    "title": "Client",
+    "description": "Kostüme is a contemporary fashion brand based in Buenos Aires, known for its avant-garde approach and innovative designs."
+  },
+  "aim": {
+    "title": "Aim",
+    "description": "Design and develop an e-commerce platform that embodies Kostüme's aesthetic, provides a seamless shopping experience, and effectively showcases their collections."
+  },
+  "concepts": [
+    {
+      "id": "01",
+      "title": "Immersive Editorial Experience"
+    },
+    {
+      "id": "02",
+      "title": "Minimalist Yet Experimental UI"
+    },
+    {
+      "id": "03",
+      "title": "Modular Product Showcase"
+    },
+    {
+      "id": "04",
+      "title": "Narrative-Driven Brand Section"
+    }
+  ],
+  "images": [
+    "/projects/kostume/1.png",
+    "/projects/kostume/2.png"
+  ],
+  "heroImage": "/projects/kostume/1.png",
+  "mobileImages": "/projects/kostume/2.png"
+} 

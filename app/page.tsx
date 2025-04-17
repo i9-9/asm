@@ -19,16 +19,16 @@ export default function Home() {
     
     // Aplicar el theme inmediatamente
     document.documentElement.classList.toggle('dark', savedTheme === 'dark');
-    document.body.style.backgroundColor = savedTheme === 'dark' ? '#202021' : '#F7F7F7';
-    document.body.style.color = savedTheme === 'dark' ? '#F7F7F7' : '#202021';
+    document.body.style.backgroundColor = savedTheme === 'dark' ? '#202021' : '#F3F1E4';
+    document.body.style.color = savedTheme === 'dark' ? '#F3F1E4' : '#202021';
   }, []);
 
   useEffect(() => {
     // Sincronizar cambios de theme
     document.documentElement.classList.toggle('dark', theme === 'dark');
     localStorage.setItem('theme', theme);
-    document.body.style.backgroundColor = theme === 'dark' ? '#202021' : '#F7F7F7';
-    document.body.style.color = theme === 'dark' ? '#F7F7F7' : '#202021';
+    document.body.style.backgroundColor = theme === 'dark' ? '#202021' : '#F3F1E4';
+    document.body.style.color = theme === 'dark' ? '#F3F1E4' : '#202021';
   }, [theme]);
 
   const toggleTheme = () => {
