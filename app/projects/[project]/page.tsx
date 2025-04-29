@@ -24,17 +24,24 @@ async function getData(project: string) {
     const filePath = path.join(process.cwd(), 'data/projects', `${project}.json`);
     const jsonData = fs.readFileSync(filePath, 'utf8');
     return JSON.parse(jsonData);
-  } catch (error) {
+  } catch {
     return null;
   }
 }
 
-export default async function Page({ params }: { params: { project: string } }) {
-  const projectData = await getData(params.project);
+// Define params type as a Promise
+type ProjectParams = Promise<{ project: string }>;
+
+// Page component with Promise params
+export default async function Page({ params }: { params: ProjectParams }) {
+  // Await the params to get the actual project value
+  const { project } = await params;
+  
+  const projectData = await getData(project);
   
   if (!projectData) {
     notFound();
   }
 
   return <ProjectPage data={projectData} />;
-} 
+}

@@ -18,7 +18,7 @@ export default function AnimatedIcons({ theme }: AnimatedIconsProps) {
     }, 1500);
 
     return () => clearInterval(interval);
-  }, []);
+  }, [icons.length]);
 
   const variants = {
     enter: {

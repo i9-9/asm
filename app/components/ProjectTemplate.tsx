@@ -3,7 +3,19 @@
 import Navbar from './Navbar';
 import Image from 'next/image';
 
-export default function ProjectTemplate({ data }) {
+interface ProjectData {
+  title: string;
+  images: string[];
+  about: string;
+  aim: string;
+  concepts: string[];
+}
+
+interface ProjectTemplateProps {
+  data: ProjectData;
+}
+
+export default function ProjectTemplate({ data }: ProjectTemplateProps) {
   return (
     <div className="bg-[#202021] text-[#F3F1E4] min-h-screen">
       <Navbar theme="dark" />

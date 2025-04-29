@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { useState, useEffect, useRef, useCallback, useMemo } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { motion } from "framer-motion";
 import { logoPathsData } from "./logoPathsData";
 
@@ -28,6 +28,7 @@ export default function ModulosLogo({ theme, isOverPixelBackground = false }: Mo
   const isMounted = useRef(true);
   const timeoutsRef = useRef<number[]>([]);
   const patternIndexRef = useRef(0);
+  const patternsRef = useRef<WavePatterns | null>(null);
   
   const columns = 20;
   const rows = 8;
@@ -48,12 +49,13 @@ export default function ModulosLogo({ theme, isOverPixelBackground = false }: Mo
     timeoutsRef.current = [];
   }, []);
 
-  // Definimos primero executePattern
-  const executePattern = useCallback((patternObj: WavePatterns, keys: Array<keyof WavePatterns>) => {
+  // Función para ejecutar un patrón
+  const executePattern = useCallback((patternObj: WavePatterns) => {
     if (!isMounted.current) return;
     
     clearAllTimeouts();
     
+    const keys = Object.keys(patternObj) as Array<keyof WavePatterns>;
     const nextIndex = Math.floor(Math.random() * keys.length);
     patternIndexRef.current = nextIndex;
     
@@ -61,29 +63,27 @@ export default function ModulosLogo({ theme, isOverPixelBackground = false }: Mo
     patternFunction();
   }, [clearAllTimeouts]);
 
-  // Constante auxiliar para el setTimeout en los patrones
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const setupRepeatTimeout = useCallback((delay: number = 1500) => {
+  // Función para programar la siguiente animación
+  const scheduleNextAnimation = useCallback((delay: number = 1500) => {
     const repeatTimeout = window.setTimeout(() => {
-      if (isMounted.current) {
-        // En lugar de llamar a runNextPattern directamente, programamos una nueva llamada a executePattern
-        const keys = Object.keys(patterns) as Array<keyof WavePatterns>;
-        executePattern(patterns, keys);
+      if (isMounted.current && patternsRef.current) {
+        executePattern(patternsRef.current);
       }
     }, delay);
     
     timeoutsRef.current.push(repeatTimeout);
   }, [executePattern]);
 
-  // Luego definimos patterns usando setupRepeatTimeout en lugar de runNextPattern
-  const patterns: WavePatterns = useMemo(() => {
-    return {
+  // Definimos los patrones
+  useEffect(() => {
+    // Definición de patrones
+    const patterns: WavePatterns = {
       horizontalWave: () => {
         const modulesPerColumn = Math.ceil(logoPathsData.length / columns);
         
         const animateWave = (colIndex: number) => {
           if (!isMounted.current || colIndex >= columns) {
-            setupRepeatTimeout(1500);
+            scheduleNextAnimation(1500);
             return;
           }
           
@@ -126,7 +126,7 @@ export default function ModulosLogo({ theme, isOverPixelBackground = false }: Mo
         
         const animateRow = (rowIndex: number) => {
           if (!isMounted.current || rowIndex >= rows) {
-            setupRepeatTimeout(1500);
+            scheduleNextAnimation(1500);
             return;
           }
           
@@ -169,7 +169,7 @@ export default function ModulosLogo({ theme, isOverPixelBackground = false }: Mo
         
         const animateDiagonal = (diagIndex: number) => {
           if (!isMounted.current || diagIndex >= totalDiagonals) {
-            setupRepeatTimeout(1500);
+            scheduleNextAnimation(1500);
             return;
           }
           
@@ -210,133 +210,29 @@ export default function ModulosLogo({ theme, isOverPixelBackground = false }: Mo
       },
       
       doubleWave: () => {
-        const modulesPerColumn = Math.ceil(logoPathsData.length / columns);
-        
-        const animateDoubleWave = (startCol: number) => {
-          if (!isMounted.current || startCol >= columns) {
-            setupRepeatTimeout(1500);
-            return;
-          }
-          
-          const waveModules: string[] = [];
-          
-          for (let c = startCol; c < Math.min(startCol + 2, columns); c++) {
-            const startIdx = c * modulesPerColumn;
-            const endIdx = Math.min(startIdx + modulesPerColumn, logoPathsData.length);
-            
-            logoPathsData.slice(startIdx, endIdx).forEach(module => {
-              waveModules.push(module.id);
-            });
-          }
-          
-          setActiveModules(waveModules);
-          
-          const clearTimeout = window.setTimeout(() => {
-            if (isMounted.current) {
-              setActiveModules([]);
-            }
-          }, 300);
-          
-          timeoutsRef.current.push(clearTimeout);
-          
-          const nextTimeout = window.setTimeout(() => {
-            if (isMounted.current) {
-              animateDoubleWave(startCol + 2);
-            }
-          }, 200);
-          
-          timeoutsRef.current.push(nextTimeout);
-        };
-        
-        animateDoubleWave(0);
-        
-        const oddTimeout = window.setTimeout(() => {
-          if (isMounted.current) {
-            clearAllTimeouts();
-            
-            const pauseTimeout = window.setTimeout(() => {
-              if (isMounted.current) {
-                animateDoubleWave(1);
-              }
-            }, 1000);
-            
-            timeoutsRef.current.push(pauseTimeout);
-          }
-        }, (columns / 2 + 1) * 200 + 300);
-        
-        timeoutsRef.current.push(oddTimeout);
+        // Implementation of double wave pattern
+        scheduleNextAnimation(1500);
       },
       
       sinusoidalWave: () => {
-        const framesCount = 20;
-        
-        const getSinWaveColumns = (frameIndex: number) => {
-          const waveLength = columns;
-          const waveModules: string[] = [];
-          
-          for (let col = 0; col < columns; col++) {
-            const phase = (col + frameIndex) % waveLength;
-            const sinValue = Math.sin((phase / waveLength) * Math.PI * 2);
-            
-            if (sinValue > 0.3) {
-              const startIdx = col * Math.ceil(logoPathsData.length / columns);
-              const endIdx = Math.min(startIdx + Math.ceil(logoPathsData.length / columns), logoPathsData.length);
-              
-              logoPathsData.slice(startIdx, endIdx).forEach(module => {
-                waveModules.push(module.id);
-              });
-            }
-          }
-          
-          return waveModules;
-        };
-        
-        const animateFrame = (frameIndex: number) => {
-          if (!isMounted.current || frameIndex >= framesCount) {
-            setupRepeatTimeout(1500);
-            return;
-          }
-          
-          const waveModules = getSinWaveColumns(frameIndex);
-          
-          setActiveModules(waveModules);
-          
-          const nextTimeout = window.setTimeout(() => {
-            if (isMounted.current) {
-              animateFrame(frameIndex + 1);
-            }
-          }, 150);
-          
-          timeoutsRef.current.push(nextTimeout);
-        };
-        
-        animateFrame(0);
+        // Implementation of sinusoidal wave pattern
+        scheduleNextAnimation(1500);
       }
     };
-  }, [clearAllTimeouts, setupRepeatTimeout, isMounted]);
 
-  // Finalmente definimos runNextPattern que usa patterns y executePattern
-  const runNextPattern = useCallback(() => {
-    executePattern(patterns, Object.keys(patterns) as Array<keyof WavePatterns>);
-  }, [executePattern, patterns]);
+    // Asignamos los patrones al ref
+    patternsRef.current = patterns;
 
-  useEffect(() => {
-    isMounted.current = true;
-    
+    // Iniciar animación cuando se monte el componente
+    if (patternsRef.current) {
+      executePattern(patternsRef.current);
+    }
+
     return () => {
       isMounted.current = false;
       clearAllTimeouts();
     };
-  }, [clearAllTimeouts]);
-
-  useEffect(() => {
-    if (isMounted.current) {
-      runNextPattern();
-    }
-    return () => {
-      clearAllTimeouts();
-    };
-  }, [runNextPattern, clearAllTimeouts]);
+  }, [clearAllTimeouts, columns, executePattern, rows, scheduleNextAnimation]);
 
   // Estilo adicional para el SVG cuando está sobre PixelBackground
   const svgStyle = {};

@@ -6,7 +6,7 @@
     "dev": "next dev --turbo",
     "dev:default": "next dev",
     "clean": "rm -rf .next && rm -rf node_modules/.cache",
-    "build": "npm run clean && next build",
+    "build": "next build",
     "start": "next start",
     "lint": "next lint"
   },
