@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 import ModulosLogo from "./ModulosLogo";
 import Image from "next/image";
+import { useState, useEffect } from "react";
 
 interface HeroProps {
   theme: string;
@@ -10,6 +11,27 @@ interface HeroProps {
 }
 
 export default function HeroNew({ theme, toggleTheme }: HeroProps) {
+  const [visibleElements, setVisibleElements] = useState({
+    title: false,
+    scrollButton: false,
+    themeToggle: false
+  });
+
+  useEffect(() => {
+    // Sequence the appearance of hero elements
+    const sequence = [
+      { element: 'title', delay: 800 },
+      { element: 'scrollButton', delay: 1000 },
+      { element: 'themeToggle', delay: 1200 }
+    ];
+    
+    sequence.forEach(({ element, delay }) => {
+      setTimeout(() => {
+        setVisibleElements(prev => ({ ...prev, [element]: true }));
+      }, delay);
+    });
+  }, []);
+
   return (
     <motion.section 
       className="flex flex-col items-center w-full h-screen"
@@ -35,12 +57,37 @@ export default function HeroNew({ theme, toggleTheme }: HeroProps) {
         {/* Grid para mejor control del espacio */}
         <div className="grid grid-cols-2 md:grid-cols-12 items-center gap-4">
           {/* Título - 4 columns */}
-          <h1 className="text-base md:text-xl uppercase text-[#DB4C40] col-span-1 md:col-span-4">
-            <span className="font-bold">DESIGN & DEVELOPMENT</span> STUDIO
-          </h1>
+          <motion.h1 
+            className="text-base md:text-xl uppercase text-[#DB4C40] col-span-1 md:col-span-4 overflow-hidden"
+            initial={{ opacity: 0 }}
+            animate={visibleElements.title ? { opacity: 1 } : { opacity: 0 }}
+            transition={{ duration: 0.6, ease: "easeOut" }}
+          >
+            <motion.span 
+              className="font-bold inline-block"
+              initial={{ x: -20, filter: "blur(8px)" }}
+              animate={visibleElements.title ? { x: 0, filter: "blur(0px)" } : { x: -20, filter: "blur(8px)" }}
+              transition={{ duration: 0.8, ease: "easeOut" }}
+            >
+              DESIGN & DEVELOPMENT
+            </motion.span>{" "}
+            <motion.span
+              className="inline-block"
+              initial={{ x: -20, filter: "blur(8px)" }}
+              animate={visibleElements.title ? { x: 0, filter: "blur(0px)" } : { x: -20, filter: "blur(8px)" }}
+              transition={{ duration: 0.8, ease: "easeOut", delay: 0.2 }}
+            >
+              STUDIO
+            </motion.span>
+          </motion.h1>
 
           {/* Scroll down - 4 columns centered */}
-          <div className="hidden md:flex justify-center col-span-4">
+          <motion.div 
+            className="hidden md:flex justify-center col-span-4"
+            initial={{ opacity: 0, y: 20 }}
+            animate={visibleElements.scrollButton ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+            transition={{ duration: 0.6, ease: "easeOut" }}
+          >
             <button
               onClick={() => {
                 document.getElementById('about-section')?.scrollIntoView({ 
@@ -59,10 +106,15 @@ export default function HeroNew({ theme, toggleTheme }: HeroProps) {
                 className="animate-bounce"
               />
             </button>
-          </div>
+          </motion.div>
 
           {/* Toggle theme - 4 columns, right aligned */}
-          <div className="flex justify-end col-span-1 md:col-span-4">
+          <motion.div 
+            className="flex justify-end col-span-1 md:col-span-4"
+            initial={{ opacity: 0, y: 20 }}
+            animate={visibleElements.themeToggle ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+            transition={{ duration: 0.6, ease: "easeOut" }}
+          >
             <button
               onClick={toggleTheme}
               className="focus:outline-none"
@@ -95,7 +147,7 @@ export default function HeroNew({ theme, toggleTheme }: HeroProps) {
                 />
               </svg>
             </button>
-          </div>
+          </motion.div>
         </div>
       </div>
     </motion.section>

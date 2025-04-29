@@ -7,10 +7,18 @@ import HeroNew from "./components/HeroNew";
 import AboutSection from "./components/AboutSection";
 import ProjectsSection from "./components/ProjectsSection";
 import ContactSection from './components/ContactSection';
+import { motion, AnimatePresence } from "framer-motion";
 
 export default function Home() {
   const [splashScreenFinished, setSplashScreenFinished] = useState(false);
   const [theme, setTheme] = useState('dark');
+  const [visibleSections, setVisibleSections] = useState({
+    navbar: false,
+    hero: false,
+    about: false,
+    projects: false,
+    contact: false
+  });
 
   useEffect(() => {
     // Recuperar theme al inicio
@@ -31,6 +39,28 @@ export default function Home() {
     document.body.style.color = theme === 'dark' ? '#F3F1E4' : '#202021';
   }, [theme]);
 
+  useEffect(() => {
+    // Sequence appearance of sections after splash screen finishes
+    if (splashScreenFinished) {
+      // Show navbar immediately
+      setVisibleSections(prev => ({ ...prev, navbar: true }));
+      
+      // Sequence the appearance of other sections
+      const timings = {
+        hero: 300,
+        about: 800,
+        projects: 1200,
+        contact: 1600
+      };
+      
+      Object.entries(timings).forEach(([section, delay]) => {
+        setTimeout(() => {
+          setVisibleSections(prev => ({ ...prev, [section]: true }));
+        }, delay);
+      });
+    }
+  }, [splashScreenFinished]);
+
   const toggleTheme = () => {
     setTheme(theme === 'dark' ? 'light' : 'dark');
   };
@@ -41,11 +71,65 @@ export default function Home() {
         <SplashScreen onFinish={() => setSplashScreenFinished(true)} />
       ) : (
         <>
-          <Navbar theme={theme} />
-          <HeroNew theme={theme} toggleTheme={toggleTheme} />
-          <AboutSection theme={theme} />
-          <ProjectsSection theme={theme} />
-          <ContactSection theme={theme} />
+          <AnimatePresence>
+            {visibleSections.navbar && (
+              <motion.div
+                initial={{ opacity: 0, y: -20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5 }}
+              >
+                <Navbar theme={theme} />
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          <AnimatePresence>
+            {visibleSections.hero && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.8 }}
+              >
+                <HeroNew theme={theme} toggleTheme={toggleTheme} />
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          <AnimatePresence>
+            {visibleSections.about && (
+              <motion.div
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8 }}
+              >
+                <AboutSection theme={theme} />
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          <AnimatePresence>
+            {visibleSections.projects && (
+              <motion.div
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8 }}
+              >
+                <ProjectsSection theme={theme} />
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          <AnimatePresence>
+            {visibleSections.contact && (
+              <motion.div
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8 }}
+              >
+                <ContactSection theme={theme} />
+              </motion.div>
+            )}
+          </AnimatePresence>
         </>
       )}
     </div>

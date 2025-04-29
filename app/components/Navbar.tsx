@@ -4,7 +4,6 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import ModulosLogo from './ModulosLogo';
-import AnimatedIcons from './AnimatedIcons';
 import { usePathname } from 'next/navigation';
 
 // Añadir esta interfaz de props
@@ -131,7 +130,9 @@ export default function Navbar({ theme }: NavbarProps) {
                   exit={{ opacity: 0 }}
                   transition={{ duration: 0.3 }}
                 >
-                  <ModulosLogo theme={theme} />
+                  <Link href="/">
+                    <ModulosLogo theme={theme} />
+                  </Link>
                 </motion.div>
               )}
             </AnimatePresence>
@@ -251,7 +252,6 @@ export default function Navbar({ theme }: NavbarProps) {
                   </ul>
                 </div>
               </div>
-              <AnimatedIcons theme={theme} />
             </div>
           </motion.div>
         )}

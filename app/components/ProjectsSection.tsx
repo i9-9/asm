@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
+import Link from 'next/link';
 
 interface Project {
   id: string;
@@ -181,13 +182,12 @@ export default function ProjectsSection({ theme }: ProjectsSectionProps) {
                           <p className="text-[#ff4b4b] text-[16px] leading-[1.4] mb-8">
                             {project.description}
                           </p>
-                          <motion.button 
-                            className="px-4 py-2 border border-[#ff4b4b] text-[#ff4b4b] hover:bg-[#ff4b4b] hover:text-[#202021] transition-colors rounded-[8px]"
-                            whileHover={{ scale: 1.05 }}
-                            whileTap={{ scale: 0.98 }}
+                          <Link 
+                            href="/projects/kostume"
+                            className="inline-block px-4 py-2 border border-[#ff4b4b] text-[#ff4b4b] hover:bg-[#ff4b4b] hover:text-[#202021] transition-colors rounded-[8px]"
                           >
                             See project
-                          </motion.button>
+                          </Link>
                         </motion.div>
                       </div>
 

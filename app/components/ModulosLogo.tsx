@@ -211,12 +211,92 @@ export default function ModulosLogo({ theme, isOverPixelBackground = false }: Mo
       
       doubleWave: () => {
         // Implementation of double wave pattern
-        scheduleNextAnimation(1500);
+        const modulesPerColumn = Math.ceil(logoPathsData.length / columns);
+         
+        const animateDoubleWave = (startCol: number) => {
+          if (!isMounted.current || startCol >= columns) {
+            scheduleNextAnimation(1500);
+            return;
+          }
+           
+          const waveModules: string[] = [];
+           
+          for (let c = startCol; c < Math.min(startCol + 2, columns); c++) {
+            const startIdx = c * modulesPerColumn;
+            const endIdx = Math.min(startIdx + modulesPerColumn, logoPathsData.length);
+             
+            logoPathsData.slice(startIdx, endIdx).forEach(module => {
+              waveModules.push(module.id);
+            });
+          }
+           
+          setActiveModules(waveModules);
+           
+          const clearTimeout = window.setTimeout(() => {
+            if (isMounted.current) {
+              setActiveModules([]);
+            }
+          }, 300);
+           
+          timeoutsRef.current.push(clearTimeout);
+           
+          const nextTimeout = window.setTimeout(() => {
+            if (isMounted.current) {
+              animateDoubleWave(startCol + 2);
+            }
+          }, 200);
+           
+          timeoutsRef.current.push(nextTimeout);
+        };
+         
+        animateDoubleWave(0);
       },
       
       sinusoidalWave: () => {
         // Implementation of sinusoidal wave pattern
-        scheduleNextAnimation(1500);
+        const framesCount = 20;
+         
+        const getSinWaveColumns = (frameIndex: number) => {
+          const waveLength = columns;
+          const waveModules: string[] = [];
+           
+          for (let col = 0; col < columns; col++) {
+            const phase = (col + frameIndex) % waveLength;
+            const sinValue = Math.sin((phase / waveLength) * Math.PI * 2);
+             
+            if (sinValue > 0.3) {
+              const startIdx = col * Math.ceil(logoPathsData.length / columns);
+              const endIdx = Math.min(startIdx + Math.ceil(logoPathsData.length / columns), logoPathsData.length);
+               
+              logoPathsData.slice(startIdx, endIdx).forEach(module => {
+                waveModules.push(module.id);
+              });
+            }
+          }
+           
+          return waveModules;
+        };
+         
+        const animateFrame = (frameIndex: number) => {
+          if (!isMounted.current || frameIndex >= framesCount) {
+            scheduleNextAnimation(1500);
+            return;
+          }
+           
+          const waveModules = getSinWaveColumns(frameIndex);
+           
+          setActiveModules(waveModules);
+           
+          const nextTimeout = window.setTimeout(() => {
+            if (isMounted.current) {
+              animateFrame(frameIndex + 1);
+            }
+          }, 150);
+           
+          timeoutsRef.current.push(nextTimeout);
+        };
+         
+        animateFrame(0);
       }
     };
 
